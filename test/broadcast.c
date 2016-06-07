@@ -9,15 +9,14 @@
 
 #include <unistd.h>
 
-#include "vlp16.h"
-
+#include "broadcast.h"
 
 int enableBroadCast(int fd) {
 	int broadcastEnable=1;
 	return setsockopt(fd, SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
 }
 
-int main(int argc, char *argv[]) {
+int boradcast() {
     struct sockaddr_in data_addr;
     struct sockaddr_in gps_addr;
     
