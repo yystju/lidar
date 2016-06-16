@@ -1,5 +1,5 @@
 #ifndef _SEND_GPRMC_H_
-#   define _SEND_GPRMC_H_
+#define _SEND_GPRMC_H_
 
 #include <stddef.h>
 

@@ -6,5 +6,9 @@ int main ( int argc, char * argv[] ) {
     
     puts(buff);
     
+    auto a = 1.24f;
+    
+    printf("%d\n", a);
+    
     return 0;
 }
