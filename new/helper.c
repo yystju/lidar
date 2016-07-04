@@ -20,7 +20,7 @@ FILE * error_fp = NULL;
 
 const int LOG_BUFF_SZ = 1024 * 8 * sizeof(char);
 
-char * dump_time(char * p) {
+const char * dump_time(const char * p) {
     if(!p) {
         return NULL;
     }
@@ -37,7 +37,7 @@ char * dump_time(char * p) {
     return p;
 }
 
-void dump(FILE * fp, char *p, va_list ap) {
+void dump(FILE * fp, const char *p, va_list ap) {
     char * buff = (char *) malloc(LOG_BUFF_SZ);
     
     memset(buff, '\0', LOG_BUFF_SZ);
@@ -59,7 +59,7 @@ void dump(FILE * fp, char *p, va_list ap) {
     free(buff);
 }
 
-void debug(char *p, ...) {
+void debug(const char *p, ...) {
     if(debug_fp == NULL) {
         debug_fp = fopen("./debug.log", "a");
     }
@@ -71,7 +71,7 @@ void debug(char *p, ...) {
     va_end(ap);
 }
 
-void info(char *p, ...) {
+void info(const char *p, ...) {
     if(info_fp == NULL) {
         info_fp = fopen("./info.log", "a");
     }
@@ -83,7 +83,7 @@ void info(char *p, ...) {
     va_end(ap);
 }
 
-void error(char *p, ...) {
+void error(const char *p, ...) {
     if(error_fp == NULL) {
         error_fp = fopen("./error.log", "a");
     }

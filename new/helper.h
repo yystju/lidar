@@ -5,9 +5,9 @@
 extern "C" {
 #endif
 
-void debug(char *p, ...);
-void info(char *p, ...);
-void error(char *p, ...);
+void debug(const char *p, ...);
+void info(const char *p, ...);
+void error(const char *p, ...);
 
 int file_exits(const char * file_name);
 

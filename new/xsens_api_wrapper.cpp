@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <memory>
 
 using namespace std;
 
@@ -16,7 +17,7 @@ public:
     A(const char * s): _str(s) {}
     A(const string& s): _str(s) {}
     A(const A& a): _str(a._str) {}
-    ~A() {}
+    ~A() {debug("YES!!!!\n");}
     
     string& str();
     const char * c_str();
@@ -33,11 +34,9 @@ const char * A::c_str() {
 }
 
 int xsens_wrapper_test(void) {
-    A * a = new A("GO");
+    auto_ptr<A> a(new A("GO"));
     
-    debug("[xsens_wrapper_test] %s\n", static_cast<const char *>(a->c_str()));
-    
-    delete a;
+    debug("[xsens_wrapper_test] %s\n", (*a).c_str());
 }
 
 #ifdef __cplusplus

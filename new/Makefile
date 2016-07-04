@@ -1,7 +1,7 @@
 CXX       = g++
 CC        = gcc
 
-CFLAGS    = -I. -std=c99
+CFLAGS    = -I. -std=c99 -Wno-implicit-function-declaration
 CXXFLAGS  = -I. -std=c++11
 LIBS      = -lm -lpthread
 

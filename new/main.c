@@ -40,24 +40,31 @@ void * lidarThread (void * p) {
 
 int main(int argc, char * argv[]) {
     debug("[START]>>\n");
-    
-    pthread_t thread[255];
-    
-    for(int i = 0; i < 255; ++i) {
-        if(i % 2 == 0) {
-            pthread_create(&thread[i], NULL, lidarThread, (void *)NULL);
+    if(argc > 1) {
+        if(file_exits(argv[1])) {
+            printf("%s existed.\n", argv[1]);
         } else {
-            pthread_create(&thread[i], NULL, xsenThread, (void *)NULL);
+            printf("%s doesn't existed.\n", argv[1]);
         }
     }
     
-    // readXsensData(xsensDataProcessor);
+    // pthread_t thread[255];
     
-    // lidar_read_2368_data(lidarDataProcessor);
+    // for(int i = 0; i < 255; ++i) {
+    //     if(i % 2 == 0) {
+    //         pthread_create(&thread[i], NULL, lidarThread, (void *)NULL);
+    //     } else {
+    //         pthread_create(&thread[i], NULL, xsenThread, (void *)NULL);
+    //     }
+    // }
     
-    for(int i = 0; i < 255; ++i) {
-        pthread_join(thread[i], (void *)NULL);
-    }
+    // // readXsensData(xsensDataProcessor);
+    
+    // // lidar_read_2368_data(lidarDataProcessor);
+    
+    // for(int i = 0; i < 255; ++i) {
+    //     pthread_join(thread[i], (void *)NULL);
+    // }
     
     debug("[START]<<\n");
     
