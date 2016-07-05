@@ -3,7 +3,9 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include <memory>
+#include <algorithm>
 
 using namespace std;
 
@@ -33,10 +35,35 @@ const char * A::c_str() {
     return this->_str.c_str();
 }
 
-int xsens_wrapper_test(void) {
-    auto_ptr<A> a(new A("GO"));
+int test1(int x) {
+    unique_ptr<A> a(new A("GO"));
+    
+    vector<int> src(10), dest(10);
+    
+    for(int i = 0; i < 10; ++i) {
+        src[i] = i;
+    }
+    
+    auto f = [x] (int & n) -> bool {return n != 0 && n % x == 0;};
+    
+    copy_if(src.begin(), src.end(), dest.begin(), f);
+    
+    cout << "dest : ";
+    
+    for(auto i : dest) {
+        if( i == 0 ) {
+            break;
+        }
+        cout << i << ", ";
+    }
+    
+    cout << endl;
     
     debug("[xsens_wrapper_test] %s\n", (*a).c_str());
+}
+
+int xsens_wrapper_test(void) {
+    return test1(3);
 }
 
 #ifdef __cplusplus
