@@ -1,3 +1,5 @@
+CC=gcc-4.8
+CXX=g++-4.8
 TARGET=libxcommunication.a
 CPP_FILES := $(wildcard *.cpp)
 C_FILES := $(wildcard *.c)

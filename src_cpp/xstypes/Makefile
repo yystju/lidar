@@ -1,3 +1,5 @@
+CC=gcc-4.8
+CXX=g++-4.8
 TARGET:=libxstypes.a
 C_FILES := $(wildcard *.c)
 CPP_FILES := $(wildcard *.cpp)
