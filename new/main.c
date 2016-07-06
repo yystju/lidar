@@ -40,7 +40,7 @@ void * lidarThread (void * p) {
 
 int main(int argc, char * argv[]) {
     debug("[START]>>\n");
-    
+    /*
     pthread_t thread[255];
     
     for(int i = 0; i < 255; ++i) {
@@ -58,9 +58,12 @@ int main(int argc, char * argv[]) {
     for(int i = 0; i < 255; ++i) {
         pthread_join(thread[i], (void *)NULL);
     }
-    
+    */
+
+    for(int i = 0; i < 10; ++i) xsens_wrapper_test();   
+
     debug("[START]<<\n");
     
-    pthread_exit(NULL);
+    //pthread_exit(NULL);
     return 0;
 }
