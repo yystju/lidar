@@ -16,4 +16,4 @@ main: $(OBJ)
 	$(CC) -o $@ -c $< $(CFLAGS)
 
 clean:
-	rm -f *.o test
+	rm -f *.o main 
