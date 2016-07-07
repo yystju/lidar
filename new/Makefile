@@ -6,7 +6,7 @@ CXXFLAGS  = -I. -I../libs/xsens/include -std=c++11
 LIBS      = -L../libs/xsens/lib -lxcommunication -lxstypes -lm -lpthread
 
 DEPS_H    = $(wildcard *.h)
-OBJ       = helper.o raspi.o conio.o deviceclass.o xsens_api_wrapper.o xsens.o lidar.o main.o 
+OBJ       = helper.o raspi.o deviceclass.o xsens_api_wrapper.o xsens.o lidar.o main.o 
 
 all: main
 

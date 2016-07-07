@@ -60,7 +60,10 @@ int main(int argc, char * argv[]) {
     }
     */
 
-    for(int i = 0; i < 10; ++i) xsens_wrapper_test();   
+    //for(int i = 0; i < 10; ++i) xsens_wrapper_test();   
+
+
+    readXsensData(xsensDataProcessor);
 
     debug("[START]<<\n");
     
