@@ -7,6 +7,8 @@
 #include <memory>
 #include <algorithm>
 
+#include "deviceclass.h"
+
 using namespace std;
 
 #ifdef __cplusplus
