@@ -49,7 +49,7 @@ void * lidar10110Thread (void * p) {
     pthread_exit(NULL);
 }
 
-int main(int argc, char * argv[]) {
+int mainx(int argc, char * argv[]) {
     debug("[START]>>\n");
 	
 	pthread_t lidar_10110_thread_handler;
@@ -66,5 +66,17 @@ int main(int argc, char * argv[]) {
     debug("[START]<<\n");
     
     pthread_exit(NULL);
+    return 0;
+}
+
+int main(int argc, char * argv[]) {
+    char buff[1024];
+    
+    format_gprmc(buff, sizeof(buff), 2016, 6, 5, 10, 59, 00);
+    
+    puts(buff);
+    
+    blink(10);
+    
     return 0;
 }
