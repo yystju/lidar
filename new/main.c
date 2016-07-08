@@ -65,6 +65,6 @@ int main(int argc, char * argv[]) {
 
     debug("[START]<<\n");
     
-    //pthread_exit(NULL);
+    pthread_exit(NULL);
     return 0;
 }
