@@ -2,8 +2,8 @@ CXX       = g++-4.8
 CC        = gcc-4.8
 
 CFLAGS    = -I. -std=c99 -Wno-implicit-function-declaration
-CXXFLAGS  = -I. -I../libs/xsens/include -std=c++11
-LIBS      = -L../libs/xsens/lib -lxcommunication -lxstypes -lm -lpthread
+CXXFLAGS  = -I. -I../src_cpp/include -std=c++11
+LIBS      = -L../src_cpp/xcommunication -L../src_cpp/xstypes -lxcommunication -lxstypes -lm -lpthread
 
 DEPS_H    = $(wildcard *.h)
 OBJ       = helper.o raspi.o deviceclass.o xsens_api_wrapper.o xsens.o lidar.o main.o 
