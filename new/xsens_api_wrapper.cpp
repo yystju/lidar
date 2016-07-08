@@ -18,11 +18,13 @@
 #include <iomanip>
 #include <stdexcept>
 
+/*
 #ifdef __GNUC__
 #include "conio.h" // for non ANSI _kbhit() and _getch()
 #else
 #include <conio.h>
 #endif
+*/
 
 using namespace std;
 
