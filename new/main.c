@@ -33,7 +33,7 @@ void * xsenThread (void * p) {
 void * lidarThread (void * p) {
     debug("[lidarThread] p : %p\n", p);
     
-    lidar_read_2368_data(lidarDataProcessor);
+    //lidar_read_data(lidarDataProcessor);
     
     pthread_exit(NULL);
 }
