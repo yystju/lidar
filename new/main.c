@@ -4,6 +4,7 @@
 #include "raspi.h"
 #include "helper.h"
 
+#include <unistd.h>
 #include <pthread.h>
 
 void xsensDataProcessor(XsensData * pData) {
@@ -30,40 +31,36 @@ void * xsenThread (void * p) {
     pthread_exit(NULL);
 }
 
-void * lidarThread (void * p) {
+void * lidar10110Thread (void * p) {
     debug("[lidarThread] p : %p\n", p);
     
-    //lidar_read_data(lidarDataProcessor);
+	LIDAR lidar = lidar_send_init(LIDAR_TIME_PORT);
+	
+	char [] str = "HELLO";
+	
+    while(1) {
+		lidar_write_data(lidar, str, 0, strlen(str));
+		sleep(1);
+	}
+	
+	lidar_dispose(lidar);
     
     pthread_exit(NULL);
 }
 
 int main(int argc, char * argv[]) {
     debug("[START]>>\n");
-    /*
-    pthread_t thread[255];
-    
-    for(int i = 0; i < 255; ++i) {
-        if(i % 2 == 0) {
-            pthread_create(&thread[i], NULL, lidarThread, (void *)NULL);
-        } else {
-            pthread_create(&thread[i], NULL, xsenThread, (void *)NULL);
-        }
-    }
-    
-    readXsensData(xsensDataProcessor);
-    
-    lidar_read_2368_data(lidarDataProcessor);
-    
-    for(int i = 0; i < 255; ++i) {
-        pthread_join(thread[i], (void *)NULL);
-    }
-    */
-
-    //for(int i = 0; i < 10; ++i) xsens_wrapper_test();   
-
-
-    readXsensData(xsensDataProcessor);
+	
+	pthread_t lidar_10110_thread_handler;
+	pthread_t xsens_thread_handler;
+	
+	pthread_create(&lidar_10110_thread_handler, NULL, lidar10110Thread, (void *)NULL);
+	pthread_create(&xsens_thread_handler, NULL, xsenThread, (void *)NULL);
+	
+	debug("...\n");
+	
+	pthread_join(lidar_10110_thread_handler, (void *)NULL);
+	pthread_join(xsens_thread_handler, (void *)NULL);
 
     debug("[START]<<\n");
     
