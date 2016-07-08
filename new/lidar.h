@@ -5,9 +5,9 @@
 extern "C" {
 #endif
 
-const int LIDAR_DATA_PORT = 2368;
-const int LIDAR_SYNC_PORT = 8308;
-const int LIDAR_TIME_PORT = 10110;
+#define LIDAR_DATA_PORT 2368
+#define LIDAR_SYNC_PORT 8308
+#define LIDAR_TIME_PORT 10110
 
 typedef void (* LidarDataProcessor)(char *p, int start, int len);
 
