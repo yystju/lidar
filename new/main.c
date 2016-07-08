@@ -4,6 +4,7 @@
 #include "raspi.h"
 #include "helper.h"
 
+#include <string.h>
 #include <unistd.h>
 #include <pthread.h>
 
@@ -36,7 +37,7 @@ void * lidar10110Thread (void * p) {
     
 	LIDAR lidar = lidar_send_init(LIDAR_TIME_PORT);
 	
-	char [] str = "HELLO";
+	char * str = "HELLO";
 	
     while(1) {
 		lidar_write_data(lidar, str, 0, strlen(str));
