@@ -33,12 +33,14 @@ LIDAR * lidar_send_init(int port) {
 	
 	if ((p->fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 		debug("Failed to open socket to UDP %d.", port);
-        return;
+		free(p);
+        return NULL;
     }
     
     if(enableBroadCast(fd) < 0) {
 		debug("Failed to enable broadcast.");
-    	return;
+		free(p);
+    	return NULL;
     }
 	
     debug("[lidar_send_init]<<\n");
