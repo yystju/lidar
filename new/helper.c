@@ -99,6 +99,14 @@ int file_exits(const char * file_name) {
     return access(file_name, F_OK ) != -1;
 }
 
+void bind_thread_cpu(pthread_t threadId, int cpu_number) {
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(cpu_number, &cpuset);
+    
+    pthread_getaffinity_np(threadId, sizeof(cpu_set_t), &cpuset);
+}
+
 int format_gprmc(char * buff, size_t buff_len, int year, int month, int day, int hour, int minute, int second)
 {
   int cx;

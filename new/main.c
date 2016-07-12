@@ -6,7 +6,8 @@
 
 #include <string.h>
 #include <unistd.h>
-#include <pthread.h>
+
+#include <uuid/uuid.h>
 
 void xsensDataProcessor(XsensData * pData) {
     debug("[xsensDataProcessor]>>\n");
@@ -27,7 +28,7 @@ void lidarDataProcessor(char *p, int start, int len) {
 void * xsenThread (void * p) {
     debug("[xsenThread] p : %p\n", p);
     
-    readXsensData(xsensDataProcessor);
+    //readXsensData(xsensDataProcessor);
     
     pthread_exit(NULL);
 }
@@ -35,28 +36,46 @@ void * xsenThread (void * p) {
 void * lidar10110Thread (void * p) {
     debug("[lidarThread] p : %p\n", p);
     
-	LIDAR lidar = lidar_send_init(LIDAR_TIME_PORT);
+// 	LIDAR lidar = lidar_send_init(LIDAR_TIME_PORT);
 	
-	char * str = "HELLO";
+// 	char * str = "HELLO";
 	
-    while(1) {
-		lidar_write_data(lidar, str, 0, strlen(str));
-		sleep(1);
-	}
+//     while(1) {
+// 		lidar_write_data(lidar, str, 0, strlen(str));
+// 		sleep(1);
+// 	}
 	
-	lidar_dispose(lidar);
+// 	lidar_dispose(lidar);
     
     pthread_exit(NULL);
 }
 
 int mainx(int argc, char * argv[]) {
     debug("[START]>>\n");
-	
+    
+    //http://linux.die.net/man/3/pthread_setaffinity_np
+
+    int num = sysconf(_SC_NPROCESSORS_CONF);
+    
+    printf("num = %d\n", num);
+    
+    char str[255];
+    uuid_t uu;
+    uuid_generate(uu);
+    
+    uuid_unparse(uuid, str);
+
+    printf("UUID : %s\n", str);
+    
+    
 	pthread_t lidar_10110_thread_handler;
 	pthread_t xsens_thread_handler;
 	
 	pthread_create(&lidar_10110_thread_handler, NULL, lidar10110Thread, (void *)NULL);
+	bind_thread_cpu(lidar_10110_thread_handler, 0);
+	
 	pthread_create(&xsens_thread_handler, NULL, xsenThread, (void *)NULL);
+	bind_thread_cpu(xsens_thread_handler, 1);
 	
 	debug("...\n");
 	

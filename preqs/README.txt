@@ -1,3 +1,6 @@
+[libuuid]
+sudo apt-get install uuid-dev
+
 [MTi sdk prerequisites]
 sudo apt-get install realpath -y
 sudo apt-get install sharutils -y
