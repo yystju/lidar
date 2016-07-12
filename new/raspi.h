@@ -6,7 +6,8 @@ extern "C" {
 #endif
 
 #include <stdio.h>
-    
+
+void blink(int n);
     
 #ifdef __cplusplus
 }

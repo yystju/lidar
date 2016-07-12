@@ -107,3 +107,36 @@ void bind_thread_cpu(pthread_t threadId, int cpu_number) {
     pthread_getaffinity_np(threadId, sizeof(cpu_set_t), &cpuset);
 }
 
+int format_gprmc(char * buff, size_t buff_len, int year, int month, int day, int hour, int minute, int second)
+{
+  int cx;
+  
+  char date_buff[20];
+  char time_buff[20];
+  
+  memset(date_buff, '\0', sizeof(date_buff));
+  memset(time_buff, '\0', sizeof(time_buff));
+  memset(buff, '\0', buff_len);
+  
+  year -= 1900;
+  
+  snprintf(date_buff, 20, "%02d%02d%02d", day, month, (year > 100 ? year - 100 : year));
+  snprintf(time_buff, 20, "%02d%02d%02d", hour, minute, second);
+  cx = snprintf(buff, buff_len, "$GPRMC,%s,A,%.2f,%s,%.2f,%s,%05.1f,%05.1f,%s,%05.1f,%s", time_buff, 0.0f, "N", 0.0f,"W", 0.0f, 0.0f, date_buff, 20.312, "E");
+  
+  puts(time_buff);
+  puts(date_buff);
+  puts (buff);
+  
+  char checksum = 0x00;
+  
+  for(int i = 1; i < cx; ++i) {
+      checksum = checksum ^ buff[i];
+  }
+  
+  if(buff_len - cx > 2) {
+      cx += snprintf(buff + cx, buff_len - cx, "*%d", checksum);
+  }
+  
+  return cx;
+}

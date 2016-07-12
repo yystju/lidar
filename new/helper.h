@@ -12,6 +12,8 @@
 #include <sys/types.h>
 #include <sys/sysinfo.h>
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -23,6 +25,8 @@ void error(const char *p, ...);
 int file_exits(const char * file_name);
 
 void bind_thread_cpu(pthread_t threadId, int cpu_number);
+
+int format_gprmc(char * buff, size_t buff_len, int year, int month, int day, int hour, int minute, int second);
 
 #ifdef __cplusplus
 }
