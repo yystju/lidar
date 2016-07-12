@@ -50,7 +50,7 @@ void * lidar10110Thread (void * p) {
     pthread_exit(NULL);
 }
 
-int mainx(int argc, char * argv[]) {
+int main(int argc, char * argv[]) {
     debug("[START]>>\n");
     
     //http://linux.die.net/man/3/pthread_setaffinity_np
@@ -63,24 +63,23 @@ int mainx(int argc, char * argv[]) {
     uuid_t uu;
     uuid_generate(uu);
     
-    uuid_unparse(uuid, str);
+    uuid_unparse(uu, str);
 
     printf("UUID : %s\n", str);
     
-    
-	pthread_t lidar_10110_thread_handler;
-	pthread_t xsens_thread_handler;
+// 	pthread_t lidar_10110_thread_handler;
+// 	pthread_t xsens_thread_handler;
 	
-	pthread_create(&lidar_10110_thread_handler, NULL, lidar10110Thread, (void *)NULL);
-	bind_thread_cpu(lidar_10110_thread_handler, 0);
+// 	pthread_create(&lidar_10110_thread_handler, NULL, lidar10110Thread, (void *)NULL);
+// 	bind_thread_cpu(lidar_10110_thread_handler, 0);
 	
-	pthread_create(&xsens_thread_handler, NULL, xsenThread, (void *)NULL);
-	bind_thread_cpu(xsens_thread_handler, 1);
+// 	pthread_create(&xsens_thread_handler, NULL, xsenThread, (void *)NULL);
+// 	bind_thread_cpu(xsens_thread_handler, 1);
 	
-	debug("...\n");
+// 	debug("...\n");
 	
-	pthread_join(lidar_10110_thread_handler, (void *)NULL);
-	pthread_join(xsens_thread_handler, (void *)NULL);
+// 	pthread_join(lidar_10110_thread_handler, (void *)NULL);
+// 	pthread_join(xsens_thread_handler, (void *)NULL);
 
     debug("[START]<<\n");
     
@@ -88,7 +87,7 @@ int mainx(int argc, char * argv[]) {
     return 0;
 }
 
-int main(int argc, char * argv[]) {
+int mainx(int argc, char * argv[]) {
     char buff[1024];
     
     format_gprmc(buff, sizeof(buff), 2016, 6, 5, 10, 59, 00);
