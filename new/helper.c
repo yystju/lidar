@@ -32,7 +32,7 @@ const char * dump_time(const char * p) {
     
     gmtime_r(&t, &m);
     
-    asctime_r(&m, p);
+    asctime_r(&m, (char *)p);
     
     return p;
 }

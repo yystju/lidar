@@ -55,9 +55,9 @@ int main(int argc, char * argv[]) {
     
     //http://linux.die.net/man/3/pthread_setaffinity_np
 
-    int num = sysconf(_SC_NPROCESSORS_CONF);
+    int num = (int)sysconf(_SC_NPROCESSORS_CONF);
     
-    printf("num = %d\n", num);
+    debug("num = %d\n", num);
     
     char str[255];
     uuid_t uu;
@@ -65,21 +65,21 @@ int main(int argc, char * argv[]) {
     
     uuid_unparse(uu, str);
 
-    printf("UUID : %s\n", str);
+    debug("UUID : %s\n", str);
     
-// 	pthread_t lidar_10110_thread_handler;
-// 	pthread_t xsens_thread_handler;
+	pthread_t lIDAR_10110_THREAD_HANDLER;
+	PTHREAD_T XSENS_THREAD_HANDLER;
 	
-// 	pthread_create(&lidar_10110_thread_handler, NULL, lidar10110Thread, (void *)NULL);
-// 	bind_thread_cpu(lidar_10110_thread_handler, 0);
+	PTHREAD_CREATE(&LIDAR_10110_THREAD_HANDLER, NULL, LIDAR10110THREAD, (VOID *)NULL);
+	BIND_THREAD_CPU(LIDAR_10110_THREAD_HANDLER, 0);
 	
-// 	pthread_create(&xsens_thread_handler, NULL, xsenThread, (void *)NULL);
-// 	bind_thread_cpu(xsens_thread_handler, 1);
+	PTHREAD_CREATE(&XSENS_THREAD_HANDLER, NULL, XSENTHREAD, (VOID *)NULL);
+	BIND_THREAD_CPU(XSENS_THREAD_HANDLER, 1);
 	
-// 	debug("...\n");
+	DEBUG("...\N");
 	
-// 	pthread_join(lidar_10110_thread_handler, (void *)NULL);
-// 	pthread_join(xsens_thread_handler, (void *)NULL);
+	PTHREAD_JOIN(LIDAR_10110_THREAD_HANDLER, (VOID *)NULL);
+	PTHREAD_JOIN(XSENS_THREAD_HANDLer, (void *)NULL);
 
     debug("[START]<<\n");
     
