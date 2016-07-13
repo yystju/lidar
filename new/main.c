@@ -70,10 +70,10 @@ int main(int argc, char * argv[]) {
 	pthread_t lidar_10110_thread_handler;
 	pthread_t xsens_thread_handler;
 	
-	pthread_create(&lidar_10110_thread_handler, NULL, lidar10110thread, (void *)NULL);
+	pthread_create(&lidar_10110_thread_handler, NULL, lidar10110Thread, (void *)NULL);
 	bind_thread_cpu(lidar_10110_thread_handler, 0);
 	
-	pthread_create(&xsens_thread_handler, NULL, xsenthread, (void *)NULL);
+	pthread_create(&xsens_thread_handler, NULL, xsenThread, (void *)NULL);
 	bind_thread_cpu(xsens_thread_handler, 1);
 	
 	debug("...\n");
