@@ -38,7 +38,24 @@ void * xsenThread (void * p) {
 }
 
 void * lidar10110Thread (void * p) {
-    debug("[lidarThread] p : %p\n", p);
+    debug("[lidar10110Thread] p : %p\n", p);
+    
+// 	LIDAR lidar = lidar_send_init(LIDAR_TIME_PORT);
+	
+// 	char * str = "HELLO";
+	
+//     while(1) {
+// 		lidar_write_data(lidar, str, 0, strlen(str));
+// 		sleep(1);
+// 	}
+	
+// 	lidar_dispose(lidar);
+    
+    pthread_exit(NULL);
+}
+
+void * lidar2368Thread (void * p) {
+    debug("[lidar2368Thread] p : %p\n", p);
     
 // 	LIDAR lidar = lidar_send_init(LIDAR_TIME_PORT);
 	
@@ -95,6 +112,11 @@ int main(int argc, char * argv[]) {
     
     debug("lidar file : %s\n", dir_full_name);
     
+    FILE * fp = fopen(dir_full_name, "w");
+    
+    
+    
+    fclose(fp);
     
     free((void *) dir_full_name);
     free((void *)uuid);
