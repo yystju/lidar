@@ -145,30 +145,41 @@ int format_gprmc(char * buff, size_t buff_len, int year, int month, int day, int
   return cx;
 }
 
-char * get_file_name(const char * prefix, const char * surfix) {
-    char * p = (char *)malloc(sizeof(char) * 1024);
-    
-    int offset = 0;
-    
-    if(prefix && strlen(prefix) > 0) {
-        offset += snprintf(p + offset, 1024  - offset, "%s/", prefix);
-    }
+char * get_uuid(void) {
+    char * p = (char *) malloc(sizeof(char) * 255);
     
     uuid_t uu;
     uuid_generate(uu);
     
-    uuid_unparse_upper(uu, p + offset);
-    
-    offset = strlen(p);
-    
-    //debug("UUID : %s\n", p);
-    
-    if(surfix && strlen(surfix) > 0) {
-        offset += snprintf(p + offset, 1024  - offset, ".%s", surfix);
-    }
+    uuid_unparse_upper(uu, p);
     
     return p;
 }
+
+// char * get_file_name(const char * prefix, const char * surfix) {
+//     char * p = (char *)malloc(sizeof(char) * 1024);
+    
+//     int offset = 0;
+    
+//     if(prefix && strlen(prefix) > 0) {
+//         offset += snprintf(p + offset, 1024  - offset, "%s", prefix);
+//     }
+    
+//     uuid_t uu;
+//     uuid_generate(uu);
+    
+//     uuid_unparse_upper(uu, p + offset);
+    
+//     offset = strlen(p);
+    
+//     //debug("UUID : %s\n", p);
+    
+//     if(surfix && strlen(surfix) > 0) {
+//         offset += snprintf(p + offset, 1024  - offset, "%s", surfix);
+//     }
+    
+//     return p;
+// }
 
 int read_configuration_file(const char * file_name, int max, ConfigurePair ** pConfig) {
     int len = 0;

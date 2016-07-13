@@ -28,7 +28,9 @@ void bind_thread_cpu(pthread_t threadId, int cpu_number);
 
 int format_gprmc(char * buff, size_t buff_len, int year, int month, int day, int hour, int minute, int second);
 
-char * get_file_name(const char * prefix, const char * surfix);
+char * get_uuid(void);
+
+// char * get_file_name(const char * prefix, const char * surfix);
 
 typedef struct {
     char key[255];

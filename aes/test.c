@@ -26,7 +26,7 @@ int main(int argc, char * argv[])
         return 0;
     }
     printf("Please Input string to encrypt : ");
-    while(gets(szbuf) > 0 )
+    while(fgets(szbuf, 1024, stdin) > 0 )
     {
         len = strlen(szbuf);
         szbuf[len] = '\0';

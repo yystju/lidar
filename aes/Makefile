@@ -1,5 +1,5 @@
-CXX       = g++
-CC        = gcc
+CXX       = g++-4.8
+CC        = gcc-4.8
 
 CFLAGS    = -I. -std=c99 -Wno-pointer-sign -Wno-deprecated-declarations
 CXXFLAGS  = -I. -std=c++11

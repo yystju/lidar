@@ -7,7 +7,11 @@
 #include "repository.h"
 
 #include <string.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
+
 
 void xsensDataProcessor(XsensData * pData) {
     debug("[xsensDataProcessor]>>\n");
@@ -65,11 +69,36 @@ int main(int argc, char * argv[]) {
         debug("[%s=%s]\n", pConfig[i].key, pConfig[i].value);
     }
     
+    const char * dir_name = (const char *)get_configuration(pConfig, lines, "repository.root");
+    
+    if(!file_exits(dir_name)) {
+        mkdir(dir_name, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH); //Mode 755
+    }
+    
+    char * uuid = get_uuid();
+    
+    debug("uuid : %s\n", uuid);
+    
+    char * dir_full_name = (char *) malloc(sizeof(char) * 1024);
+    
+    strncpy(dir_full_name, dir_name, 1024 - strlen(dir_full_name));
+    
+    strncat(dir_full_name + strlen(dir_full_name), uuid, 1024 - strlen(dir_full_name));
+    
+    debug("dir_full_name : %s\n", dir_full_name);
+    
+    mkdir(dir_full_name, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+    
+    int offset = strlen(dir_full_name);
+    
+    strncpy(dir_full_name + offset, "/lidar", 1024 - offset);
+    
+    debug("lidar file : %s\n", dir_full_name);
+    
+    
+    free((void *) dir_full_name);
+    free((void *)uuid);
     free(pConfig);
-    
-    const char * file_name = get_file_name(get_configuration(pConfig, lines, "repository.root"), "BIN");
-    
-    debug("file_name : %s\n", file_name);
     
 	pthread_t lidar_10110_thread_handler;
 	pthread_t xsens_thread_handler;
