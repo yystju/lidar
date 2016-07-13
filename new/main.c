@@ -67,19 +67,19 @@ int main(int argc, char * argv[]) {
 
     debug("UUID : %s\n", str);
     
-	pthread_t lIDAR_10110_THREAD_HANDLER;
-	PTHREAD_T XSENS_THREAD_HANDLER;
+	pthread_t lidar_10110_thread_handler;
+	pthread_t xsens_thread_handler;
 	
-	PTHREAD_CREATE(&LIDAR_10110_THREAD_HANDLER, NULL, LIDAR10110THREAD, (VOID *)NULL);
-	BIND_THREAD_CPU(LIDAR_10110_THREAD_HANDLER, 0);
+	pthread_create(&lidar_10110_thread_handler, NULL, lidar10110thread, (void *)NULL);
+	bind_thread_cpu(lidar_10110_thread_handler, 0);
 	
-	PTHREAD_CREATE(&XSENS_THREAD_HANDLER, NULL, XSENTHREAD, (VOID *)NULL);
-	BIND_THREAD_CPU(XSENS_THREAD_HANDLER, 1);
+	pthread_create(&xsens_thread_handler, NULL, xsenthread, (void *)NULL);
+	bind_thread_cpu(xsens_thread_handler, 1);
 	
-	DEBUG("...\N");
+	debug("...\n");
 	
-	PTHREAD_JOIN(LIDAR_10110_THREAD_HANDLER, (VOID *)NULL);
-	PTHREAD_JOIN(XSENS_THREAD_HANDLer, (void *)NULL);
+	pthread_join(lidar_10110_thread_handler, (void *)NULL);
+	pthread_join(xsens_thread_handler, (void *)NULL);
 
     debug("[START]<<\n");
     
