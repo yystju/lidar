@@ -4,10 +4,10 @@
 #include "raspi.h"
 #include "helper.h"
 
+#include "repository.h"
+
 #include <string.h>
 #include <unistd.h>
-
-#include <uuid/uuid.h>
 
 void xsensDataProcessor(XsensData * pData) {
     debug("[xsensDataProcessor]>>\n");
@@ -53,19 +53,23 @@ void * lidar10110Thread (void * p) {
 int main(int argc, char * argv[]) {
     debug("[START]>>\n");
     
-    //http://linux.die.net/man/3/pthread_setaffinity_np
-
     int num = (int)sysconf(_SC_NPROCESSORS_CONF);
     
     debug("num = %d\n", num);
     
-    char str[255];
-    uuid_t uu;
-    uuid_generate(uu);
+    ConfigurePair * pConfig = NULL;
     
-    uuid_unparse(uu, str);
-
-    debug("UUID : %s\n", str);
+    int lines = read_configuration_file("./test.ini", 5, &pConfig);
+    
+    for(int i = 0; i < lines; ++i) {
+        debug("[%s=%s]\n", pConfig[i].key, pConfig[i].value);
+    }
+    
+    free(pConfig);
+    
+    const char * file_name = get_file_name(get_configuration(pConfig, lines, "repository.root"), "BIN");
+    
+    debug("file_name : %s\n", file_name);
     
 	pthread_t lidar_10110_thread_handler;
 	pthread_t xsens_thread_handler;

@@ -28,6 +28,15 @@ void bind_thread_cpu(pthread_t threadId, int cpu_number);
 
 int format_gprmc(char * buff, size_t buff_len, int year, int month, int day, int hour, int minute, int second);
 
+char * get_file_name(const char * prefix, const char * surfix);
+
+typedef struct {
+    char key[255];
+    char value[255];
+} ConfigurePair;
+
+int read_configuration_file(const char * file_name, int max, ConfigurePair ** pConfig);
+
 #ifdef __cplusplus
 }
 #endif
