@@ -1,5 +1,9 @@
-#include <stdio.h>
 #include "aes.h"
+#include <stdio.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 static u8 pow_tab[256];
 static u8 log_tab[256];
@@ -337,3 +341,7 @@ void aes_decrypt(struct aes_ctx * ctx, u8 *out, const u8 *in)
     dst[2] = cpu_to_le32(b0[2]);
     dst[3] = cpu_to_le32(b0[3]);
 }
+
+#ifdef __cplusplus
+}
+#endif

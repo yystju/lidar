@@ -9,6 +9,9 @@ extern "C" {
 #define LIDAR_SYNC_PORT 8308
 #define LIDAR_TIME_PORT 10110
 
+#define LIDAR_DATA_PACKET_SIZE 1248
+#define LIDAR_SYNC_PACKET_SIZE 554
+
 typedef void (* LidarDataProcessor)(char *p, int start, int len);
 
 typedef void * LIDAR;
@@ -19,6 +22,11 @@ void lidar_dispose(LIDAR p);
 
 void lidar_read_data(LIDAR p, LidarDataProcessor processor);
 void lidar_write_data(LIDAR p, char * data, int start, int len);
+
+typedef struct {
+  char header[42];
+  char payload[1206];
+} LIDAR_DATA_PACKET;
 
 #ifdef __cplusplus
 }

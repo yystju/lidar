@@ -39,6 +39,9 @@ typedef struct {
 
 int read_configuration_file(const char * file_name, int max, ConfigurePair ** pConfig);
 
+int encode_data(char * dest, char * src, int n);
+int decode_data(char * dest, char * src, int n);
+
 #ifdef __cplusplus
 }
 #endif

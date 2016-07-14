@@ -71,7 +71,7 @@ void * lidar2368Thread (void * p) {
     pthread_exit(NULL);
 }
 
-int main(int argc, char * argv[]) {
+int start(int argc, char * argv[]) {
     debug("[START]>>\n");
     
     int num = (int)sysconf(_SC_NPROCESSORS_CONF);
@@ -142,14 +142,47 @@ int main(int argc, char * argv[]) {
     return 0;
 }
 
-int mainx(int argc, char * argv[]) {
-    char buff[1024];
+int test_encoder_decoder(int argc, char * argv[]) {
+    //char buff[1024];
     
-    format_gprmc(buff, sizeof(buff), 2016, 6, 5, 10, 59, 00);
+    //format_gprmc(buff, sizeof(buff), 2016, 6, 5, 10, 59, 00);
     
-    puts(buff);
+    //puts(buff);
     
-    blink(10);
+    //blink(10);
+    
+    gen_tabs();
+    
+    char * src = "Hello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\n";
+    
+    debug("strlen(src) : %d\n", strlen(src));
+    
+    char encoded[1024];
+    
+    char decoded[1024];
+    
+    int len = encode_data(encoded, src, strlen(src));
+    
+    debug("len : %d\n", len);
+    
+    int len2 = decode_data(decoded, encoded, len);
+    
+    debug("len2 : %d\n", len2);
+    
+    decoded[len2] = '\0';
+    
+    debug("--1--\n");
+    
+    debug("decoded : %s\n", decoded);
+    
+    debug("strlen(decoded) : %d\n", strlen(decoded));
+    
+    debug("src and decoded are %s.\n", strcmp(src, decoded) == 0 ? "equal" : "not equal");
     
     return 0;
+}
+
+int main(int argc, char * argv[]) {
+    //return start(argc, argv);
+    return test_encoder_decoder(argc, argv);
 }

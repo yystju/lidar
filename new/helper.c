@@ -13,8 +13,15 @@
 #include <stdarg.h>
 #include <time.h>
 #include <string.h>
+#include <memory.h>
 
 #include <uuid/uuid.h>
+
+#include "aes.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 FILE * debug_fp = NULL;
 FILE * info_fp = NULL;
@@ -224,3 +231,73 @@ const char * get_configuration(ConfigurePair * pConfig, int size, const char * k
     }
     return NULL;
 }
+
+/**
+ * dest -- size must be larger than src size and should equal to (N * 16), N = 1, 2, 3, ...
+ */
+int encode_data(char * dest, char * src, int n) {
+  int len = 0;
+    
+  char * pkey = "1qazxsw23edcvfr4";
+  
+  struct aes_ctx aes;
+  
+  aes_set_key(&aes, pkey, 16);
+  
+  memset(dest, '\0', n);
+  
+  for(int i  = 0; i < n; i = i + 16) {
+      aes_encrypt(&aes, dest + i, src + i);
+      len += 16;
+  }
+  
+  if(n % 16 > 0) {//last packet.
+    char buff[16];
+    
+    memset(buff, '\0', 16);
+    
+    memcpy(buff, src + (n / 16) * 16, n % 16);
+    
+    aes_encrypt(&aes, dest + (n / 16) * 16, buff);
+    len += 16;
+  }
+  
+  return len;
+}
+
+int decode_data(char * dest, char * src, int n) {
+  int len = 0;
+
+  char * pkey = "1qazxsw23edcvfr4";
+  
+  struct aes_ctx aes;
+
+  gen_tabs();
+    
+  aes_set_key(&aes, pkey, 16);
+  
+  memset(dest, '\0', n);
+  
+  for(int i  = 0; i < n; i = i + 16) {
+      aes_decrypt(&aes, dest + i, src + i);
+      len += 16;
+  }
+  
+  if(n % 16 > 0) {//last packet.
+    char buff[16];
+    
+    memset(buff, '\0', 16);
+    
+    memcpy(buff, src + (n / 16) * 16, n % 16);
+    
+    aes_decrypt(&aes, dest + (n / 16) * 16, buff);
+    
+    len += 16;
+  }
+  
+  return len;
+}
+
+#ifdef __cplusplus
+}
+#endif
