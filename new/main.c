@@ -12,6 +12,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <stdio.h>
+
 void xsensDataProcessor(XsensData * pData) {
     if(near_zero(pData->euler_roll) && near_zero(pData->euler_pitch) && near_zero(pData->euler_yaw)) return;
     
@@ -26,12 +28,20 @@ void xsensDataProcessor(XsensData * pData) {
     debug("[xsensDataProcessor]<<\n");
 }
 
-void lidarDataProcessor(char *p, int start, int len) {
-    debug("[lidarDataProcessor]>>\n");
+void lidar2368DataProcessor(char *p, int start, int len) {
+    debug("[lidar2368DataProcessor]>>\n");
     
     debug("p : %p, start : %d, len %d\n", p, start, len);
     
-    debug("[lidarDataProcessor]<<\n");
+    debug("[lidar2368DataProcessor]<<\n");
+}
+
+void lidar8308DataProcessor(char *p, int start, int len) {
+    debug("[lidar8308DataProcessor]>>\n");
+    
+    debug("p : %p, start : %d, len %d\n", p, start, len);
+    
+    debug("[lidar8308DataProcessor]<<\n");
 }
 
 void * xsenThread (void * p) {
@@ -53,16 +63,16 @@ void * lidar10110Thread (void * p) {
     
     Configuration * configurations = (Configuration *)p;
     
-// 	LIDAR lidar = lidar_send_init(LIDAR_TIME_PORT);
+	LIDAR lidar = lidar_send_init(LIDAR_TIME_PORT);
 	
-// 	char * str = "HELLO";
+	char * str = "HELLO";
 	
-//     while(1) {
-// 		lidar_write_data(lidar, str, 0, strlen(str));
-// 		sleep(1);
-// 	}
+    while(1) {
+		lidar_write_data(lidar, str, 0, strlen(str));
+		sleep(1);
+	}
 	
-// 	lidar_dispose(lidar);
+	lidar_dispose(lidar);
     
     pthread_exit(NULL);
 }
@@ -70,16 +80,31 @@ void * lidar10110Thread (void * p) {
 void * lidar2368Thread (void * p) {
     debug("[lidar2368Thread] p : %p\n", p);
     
-// 	LIDAR lidar = lidar_send_init(LIDAR_TIME_PORT);
+    Configuration * configurations = (Configuration *)p;
+    
+	LIDAR lidar = lidar_receive_init(LIDAR_DATA_PORT);
 	
-// 	char * str = "HELLO";
+    while(1) {
+		lidar_read_data(lidar, lidar2368DataProcessor);
+	}
 	
-//     while(1) {
-// 		lidar_write_data(lidar, str, 0, strlen(str));
-// 		sleep(1);
-// 	}
+	lidar_dispose(lidar);
+    
+    pthread_exit(NULL);
+}
+
+void * lidar8308Thread (void * p) {
+    debug("[lidar8308Thread] p : %p\n", p);
+    
+    Configuration * configurations = (Configuration *)p;
+    
+	LIDAR lidar = lidar_receive_init(LIDAR_SYNC_PORT);
 	
-// 	lidar_dispose(lidar);
+    while(1) {
+		lidar_read_data(lidar, lidar8308DataProcessor);
+	}
+	
+	lidar_dispose(lidar);
     
     pthread_exit(NULL);
 }
@@ -106,41 +131,6 @@ int start(int argc, char * argv[]) {
 	pthread_create(&xsens_thread_handler, NULL, xsenThread, (void *)configurations);
 	bind_thread_cpu(xsens_thread_handler, 1);
     
-    // const char * dir_name = (const char *)get_configuration(configurations, "repository.root");
-    
-    // if(!file_exits(dir_name)) {
-    //     mkdir(dir_name, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH); //Mode 755
-    // }
-    
-    // char * uuid = get_uuid();
-    
-    // debug("uuid : %s\n", uuid);
-    
-    // char * dir_full_name = (char *) malloc(sizeof(char) * 1024);
-    
-    // strncpy(dir_full_name, dir_name, 1024 - strlen(dir_full_name));
-    
-    // strncat(dir_full_name + strlen(dir_full_name), uuid, 1024 - strlen(dir_full_name));
-    
-    // debug("dir_full_name : %s\n", dir_full_name);
-    
-    // mkdir(dir_full_name, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
-    
-    // int offset = strlen(dir_full_name);
-    
-    // strncpy(dir_full_name + offset, "/lidar", 1024 - offset);
-    
-    // debug("lidar file : %s\n", dir_full_name);
-    
-    // FILE * fp = fopen(dir_full_name, "w");
-    
-    
-    
-    // fclose(fp);
-    
-    // free((void *) dir_full_name);
-    // free((void *)uuid);
-    
 	debug("...\n");
 	
 	pthread_join(lidar_10110_thread_handler, (void *)NULL);
@@ -151,6 +141,34 @@ int start(int argc, char * argv[]) {
     dispose_configuration(configurations);
     
     pthread_exit(NULL);
+    return 0;
+}
+
+int test_repository (int argc, char * argv[]) {
+     Configuration * configurations = read_configuration_file("./test.ini", 5);
+    
+    const char * ins_device = (const char *)get_configuration(configurations, "repository.root");
+    
+    debug("ins_device : %s\n", ins_device);
+    
+    REPOSITORY * repo = repository_init(ins_device);
+    
+    REPO_ITEM * item = repository_new_item(repo);
+    
+    repository_close_item(item);
+    
+    FILE * fp = repository_open_write_file(item, "lidar");
+    
+    debug("fp : %p\n", fp);
+    
+    fprintf(fp, "%s\n", repo->root_pathname);
+    
+    fclose(fp);
+    
+    repository_dispose(repo);
+    
+    dispose_configuration(configurations);
+    
     return 0;
 }
 
@@ -197,9 +215,9 @@ int test_encoder_decoder(int argc, char * argv[]) {
 int test_xsens(int argc, char * argv[]) {
     Configuration * configurations = read_configuration_file("./test.ini", 5);
     
-    for(int i = 0; i < configurations->length; ++i) {
-        debug("[%s=%s]\n", (configurations->pConfig)[i].key, (configurations->pConfig)[i].value);
-    }
+    // for(int i = 0; i < configurations->length; ++i) {
+    //     debug("[%s=%s]\n", (configurations->pConfig)[i].key, (configurations->pConfig)[i].value);
+    // }
     
     const char * ins_device = (const char *)get_configuration(configurations, "ins.device");
     
@@ -213,5 +231,6 @@ int test_xsens(int argc, char * argv[]) {
 int main(int argc, char * argv[]) {    
     //return start(argc, argv);
     //return test_encoder_decoder(argc, argv);
-    return test_xsens(argc, argv);
+    //return test_xsens(argc, argv);
+    return test_repository(argc, argv);
 }

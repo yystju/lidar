@@ -16,17 +16,17 @@ typedef void (* LidarDataProcessor)(char *p, int start, int len);
 
 typedef void * LIDAR;
 
+typedef struct {
+  char header[42];
+  char payload[1206];
+} LIDAR_DATA_PACKET;
+
 LIDAR lidar_send_init(int port);
 LIDAR lidar_receive_init(int port);
 void lidar_dispose(LIDAR p);
 
 void lidar_read_data(LIDAR p, LidarDataProcessor processor);
 void lidar_write_data(LIDAR p, char * data, int start, int len);
-
-typedef struct {
-  char header[42];
-  char payload[1206];
-} LIDAR_DATA_PACKET;
 
 #ifdef __cplusplus
 }
