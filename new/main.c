@@ -12,11 +12,16 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-
 void xsensDataProcessor(XsensData * pData) {
+    if(near_zero(pData->euler_roll) && near_zero(pData->euler_pitch) && near_zero(pData->euler_yaw)) return;
+    
     debug("[xsensDataProcessor]>>\n");
     
-    debug("pData->year : %d\n", pData->year);
+    debug("quaternion : [%f %f %f %f]\n", pData->quaternion_w, pData->quaternion_x, pData->quaternion_y, pData->quaternion_z);
+    
+    debug("euler : [%f %f %f]\n", pData->euler_roll, pData->euler_pitch, pData->euler_yaw);
+    
+    debug("date : %04d-%02d-%02d %02d:%02d:%02d\n", pData->year, pData->month, pData->day, pData->hour, pData->minute, pData->second);
     
     debug("[xsensDataProcessor]<<\n");
 }
@@ -32,13 +37,21 @@ void lidarDataProcessor(char *p, int start, int len) {
 void * xsenThread (void * p) {
     debug("[xsenThread] p : %p\n", p);
     
-    //readXsensData(xsensDataProcessor);
+    Configuration * configurations = (Configuration *)p;
+    
+    const char * ins_device = (const char *)get_configuration(configurations, "ins.device");
+    
+    debug("ins_device : %s\n", ins_device);
+    
+    readXsensData(ins_device, xsensDataProcessor);
     
     pthread_exit(NULL);
 }
 
 void * lidar10110Thread (void * p) {
     debug("[lidar10110Thread] p : %p\n", p);
+    
+    Configuration * configurations = (Configuration *)p;
     
 // 	LIDAR lidar = lidar_send_init(LIDAR_TIME_PORT);
 	
@@ -78,65 +91,64 @@ int start(int argc, char * argv[]) {
     
     debug("num = %d\n", num);
     
-    ConfigurePair * pConfig = NULL;
+    Configuration * configurations = read_configuration_file("./test.ini", 5);
     
-    int lines = read_configuration_file("./test.ini", 5, &pConfig);
+    // for(int i = 0; i < configurations->length; ++i) {
+    //     debug("[%s=%s]\n", (configurations->pConfig)[i].key, (configurations->pConfig)[i].value);
+    // }
     
-    for(int i = 0; i < lines; ++i) {
-        debug("[%s=%s]\n", pConfig[i].key, pConfig[i].value);
-    }
-    
-    const char * dir_name = (const char *)get_configuration(pConfig, lines, "repository.root");
-    
-    if(!file_exits(dir_name)) {
-        mkdir(dir_name, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH); //Mode 755
-    }
-    
-    char * uuid = get_uuid();
-    
-    debug("uuid : %s\n", uuid);
-    
-    char * dir_full_name = (char *) malloc(sizeof(char) * 1024);
-    
-    strncpy(dir_full_name, dir_name, 1024 - strlen(dir_full_name));
-    
-    strncat(dir_full_name + strlen(dir_full_name), uuid, 1024 - strlen(dir_full_name));
-    
-    debug("dir_full_name : %s\n", dir_full_name);
-    
-    mkdir(dir_full_name, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
-    
-    int offset = strlen(dir_full_name);
-    
-    strncpy(dir_full_name + offset, "/lidar", 1024 - offset);
-    
-    debug("lidar file : %s\n", dir_full_name);
-    
-    FILE * fp = fopen(dir_full_name, "w");
-    
-    
-    
-    fclose(fp);
-    
-    free((void *) dir_full_name);
-    free((void *)uuid);
-    free(pConfig);
-    
-	pthread_t lidar_10110_thread_handler;
+    pthread_t lidar_10110_thread_handler;
 	pthread_t xsens_thread_handler;
 	
-	pthread_create(&lidar_10110_thread_handler, NULL, lidar10110Thread, (void *)NULL);
+	pthread_create(&lidar_10110_thread_handler, NULL, lidar10110Thread, (void *)configurations);
 	bind_thread_cpu(lidar_10110_thread_handler, 0);
 	
-	pthread_create(&xsens_thread_handler, NULL, xsenThread, (void *)NULL);
+	pthread_create(&xsens_thread_handler, NULL, xsenThread, (void *)configurations);
 	bind_thread_cpu(xsens_thread_handler, 1);
-	
+    
+    // const char * dir_name = (const char *)get_configuration(configurations, "repository.root");
+    
+    // if(!file_exits(dir_name)) {
+    //     mkdir(dir_name, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH); //Mode 755
+    // }
+    
+    // char * uuid = get_uuid();
+    
+    // debug("uuid : %s\n", uuid);
+    
+    // char * dir_full_name = (char *) malloc(sizeof(char) * 1024);
+    
+    // strncpy(dir_full_name, dir_name, 1024 - strlen(dir_full_name));
+    
+    // strncat(dir_full_name + strlen(dir_full_name), uuid, 1024 - strlen(dir_full_name));
+    
+    // debug("dir_full_name : %s\n", dir_full_name);
+    
+    // mkdir(dir_full_name, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+    
+    // int offset = strlen(dir_full_name);
+    
+    // strncpy(dir_full_name + offset, "/lidar", 1024 - offset);
+    
+    // debug("lidar file : %s\n", dir_full_name);
+    
+    // FILE * fp = fopen(dir_full_name, "w");
+    
+    
+    
+    // fclose(fp);
+    
+    // free((void *) dir_full_name);
+    // free((void *)uuid);
+    
 	debug("...\n");
 	
 	pthread_join(lidar_10110_thread_handler, (void *)NULL);
 	pthread_join(xsens_thread_handler, (void *)NULL);
 
     debug("[START]<<\n");
+    
+    dispose_configuration(configurations);
     
     pthread_exit(NULL);
     return 0;
@@ -182,7 +194,24 @@ int test_encoder_decoder(int argc, char * argv[]) {
     return 0;
 }
 
-int main(int argc, char * argv[]) {
+int test_xsens(int argc, char * argv[]) {
+    Configuration * configurations = read_configuration_file("./test.ini", 5);
+    
+    for(int i = 0; i < configurations->length; ++i) {
+        debug("[%s=%s]\n", (configurations->pConfig)[i].key, (configurations->pConfig)[i].value);
+    }
+    
+    const char * ins_device = (const char *)get_configuration(configurations, "ins.device");
+    
+    debug("ins_device : %s\n", ins_device);
+    
+    readXsensData(ins_device, xsensDataProcessor);
+    
+    dispose_configuration(configurations);
+}
+
+int main(int argc, char * argv[]) {    
     //return start(argc, argv);
-    return test_encoder_decoder(argc, argv);
+    //return test_encoder_decoder(argc, argv);
+    return test_xsens(argc, argv);
 }

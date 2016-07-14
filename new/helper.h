@@ -37,10 +37,19 @@ typedef struct {
     char value[255];
 } ConfigurePair;
 
-int read_configuration_file(const char * file_name, int max, ConfigurePair ** pConfig);
+typedef struct {
+    ConfigurePair * pConfig;
+    int length;
+} Configuration;
+
+Configuration * read_configuration_file(const char * file_name, int capacity);
+void dispose_configuration(Configuration * configuration);
+const char * get_configuration(Configuration * configuration, const char * key);
 
 int encode_data(char * dest, char * src, int n);
 int decode_data(char * dest, char * src, int n);
+
+int near_zero(double d);
 
 #ifdef __cplusplus
 }

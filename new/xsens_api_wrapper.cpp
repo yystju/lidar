@@ -143,44 +143,62 @@ int xsens_wrapper_read(XSENS xsens, XsensData * pData) {
 
         //Quaternion
 		XsQuaternion quaternion = packet.orientationQuaternion();
-		std::cout << "\r"
-				  << "W:" << std::setw(5) << std::fixed << std::setprecision(2) << quaternion.m_w
-				  << ",X:" << std::setw(5) << std::fixed << std::setprecision(2) << quaternion.m_x
-				  << ",Y:" << std::setw(5) << std::fixed << std::setprecision(2) << quaternion.m_y
-				  << ",Z:" << std::setw(5) << std::fixed << std::setprecision(2) << quaternion.m_z
-		;
+		
+		pData->quaternion_w = (double)quaternion.m_w;
+		pData->quaternion_x = (double)quaternion.m_x;
+		pData->quaternion_y = (double)quaternion.m_y;
+		pData->quaternion_z = (double)quaternion.m_z;
+		
+// 		std::cout << "\r"
+// 				  << "W:" << std::setw(5) << std::fixed << std::setprecision(2) << quaternion.m_w
+// 				  << ",X:" << std::setw(5) << std::fixed << std::setprecision(2) << quaternion.m_x
+// 				  << ",Y:" << std::setw(5) << std::fixed << std::setprecision(2) << quaternion.m_y
+// 				  << ",Z:" << std::setw(5) << std::fixed << std::setprecision(2) << quaternion.m_z
+// 		;
 
         //Euler
 		XsEuler euler = packet.orientationEuler();
-		std::cout << ",Roll:" << std::setw(7) << std::fixed << std::setprecision(2) << euler.m_roll
-				  << ",Pitch:" << std::setw(7) << std::fixed << std::setprecision(2) << euler.m_pitch
-				  << ",Yaw:" << std::setw(7) << std::fixed << std::setprecision(2) << euler.m_yaw
-		;
+		
+		pData->euler_roll = (double)euler.m_roll;
+		pData->euler_pitch = (double)euler.m_pitch;
+		pData->euler_yaw = (double)euler.m_yaw;
+		
+// 		std::cout << ",Roll:" << std::setw(7) << std::fixed << std::setprecision(2) << euler.m_roll
+// 				  << ",Pitch:" << std::setw(7) << std::fixed << std::setprecision(2) << euler.m_pitch
+// 				  << ",Yaw:" << std::setw(7) << std::fixed << std::setprecision(2) << euler.m_yaw
+// 		;
 
-        std::cout << std::endl << std::flush;
+//        std::cout << std::endl << std::flush;
 		
 		
 		//Time
 		XsUtcTime now = packet.utcTime();
 		
-		std::cout << int(now.m_year - 1900) << "-" << int(now.m_month) << "-" << int(now.m_day) << " " << int(now.m_hour) << ":" << int(now.m_minute) << ":" << int(now.m_second) << std::endl;
+// 		std::cout << int(now.m_year - 1900) << "-" << int(now.m_month) << "-" << int(now.m_day) << " " << int(now.m_hour) << ":" << int(now.m_minute) << ":" << int(now.m_second) << std::endl;
 		
+		pData->year = int(now.m_year - 1900);
+		
+		pData->month = int(now.m_month);
+		pData->day = int(now.m_day);
+		pData->hour = int(now.m_hour);
+		pData->minute = int(now.m_minute);
+		pData->second = int(now.m_second);
 		
 		//Velocity
 		XsVector velocity = packet.velocity();
 
-		std::cout << "V[";
+// 		std::cout << "V[";
 
-		for (XsSize i = 0; i < velocity.size(); ++i) {
-			XsReal value = velocity[i];
-			if (i != 0) {
-				std::cout << ",";
-			}
+// 		for (XsSize i = 0; i < velocity.size(); ++i) {
+// 			XsReal value = velocity[i];
+// 			if (i != 0) {
+// 				std::cout << ",";
+// 			}
 
-			std::cout << value;
-		}
+// 			std::cout << value;
+// 		}
 		
-		std::cout << "]" << std::endl;
+// 		std::cout << "]" << std::endl;
 	}
 	msgs.clear();
 	XsTime::msleep(0);

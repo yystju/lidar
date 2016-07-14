@@ -188,44 +188,50 @@ char * get_uuid(void) {
 //     return p;
 // }
 
-int read_configuration_file(const char * file_name, int max, ConfigurePair ** pConfig) {
+Configuration * read_configuration_file(const char * file_name, int capacity) {
     int len = 0;
     
     char buff[1024];
     
     FILE * file = fopen(file_name, "r");
     
-    if(*pConfig != NULL) {
-        free(*pConfig);
-        (*pConfig) = NULL;
-    }
+    Configuration * configurations = (Configuration *) malloc(sizeof(Configuration));
     
-    (*pConfig) = (ConfigurePair *) malloc(sizeof(ConfigurePair) * max);
+    configurations->pConfig = (ConfigurePair *) malloc(sizeof(ConfigurePair) * capacity);
     
     while(!feof(file)) {
         //debug("len = %d, max = %d\n", len, max);
-        if(len >= max) break;
+        if(len >= capacity) break;
         
         memset(buff, '\0', 1024);
         fgets(buff, 1024, file);
         
         if(strlen(buff) > 0 && buff[0] != '#') {
-            sscanf(buff, "%[^=]=%s", (((*pConfig)[len]).key), (((*pConfig)[len]).value));
+            sscanf(buff, "%[^=]=%s", (((configurations->pConfig)[len]).key), (((configurations->pConfig)[len]).value));
             
             ++len;
         }
     }
     
+    configurations->length = len;
+    
     fclose(file);
     
-    return len;
+    return configurations;
 }
 
-const char * get_configuration(ConfigurePair * pConfig, int size, const char * key) {
-    if(pConfig) {
-        for(int i = 0; i < size; ++i) {
-            if(strcmp(pConfig[i].key, key) == 0) {
-                return pConfig[i].value;
+void dispose_configuration(Configuration * configurations) {
+    if(configurations) {
+        free(configurations->pConfig);
+        free(configurations);
+    }
+}
+
+const char * get_configuration(Configuration * configurations, const char * key) {
+    if(configurations) {
+        for(int i = 0; i < configurations->length; ++i) {
+            if(strcmp((configurations->pConfig)[i].key, key) == 0) {
+                return (configurations->pConfig)[i].value;
             }
         }
     }
@@ -296,6 +302,11 @@ int decode_data(char * dest, char * src, int n) {
   }
   
   return len;
+}
+
+
+int near_zero(double d) {
+    return (d < 1e-2);
 }
 
 #ifdef __cplusplus

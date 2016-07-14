@@ -12,11 +12,20 @@ typedef struct {
     int hour;
     int minute;
     int second;
+    
+    double quaternion_w;
+    double quaternion_x;
+    double quaternion_y;
+    double quaternion_z;
+    
+    double euler_roll;
+    double euler_pitch;
+    double euler_yaw;
 } XsensData;
 
 typedef void (* XsensDataProcessor)(XsensData * pData);
 
-void readXsensData(XsensDataProcessor processor);
+void readXsensData(const char * device_name, XsensDataProcessor processor);
 
 #ifdef __cplusplus
 }

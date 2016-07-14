@@ -5,10 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-void readXsensData(XsensDataProcessor processor) {
+void readXsensData(const char * device_name, XsensDataProcessor processor) {
     debug("[readXsensData]>>\n");
     
-    XSENS xsens = xsens_wrapper_init("/dev/ttyAMA0", 115200);
+    XSENS xsens = xsens_wrapper_init(device_name, 115200);
     
     XsensData * pData = (XsensData *)malloc(sizeof(XsensData));
     
