@@ -12,7 +12,7 @@ extern "C" {
 #define LIDAR_DATA_PACKET_SIZE 1248
 #define LIDAR_SYNC_PACKET_SIZE 554
 
-typedef void (* LidarDataProcessor)(char *p, int start, int len);
+typedef int (* LidarDataProcessor)(char *p, int start, int len);
 
 typedef void * LIDAR;
 

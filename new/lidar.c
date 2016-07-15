@@ -104,11 +104,16 @@ void lidar_read_data(LIDAR lidar, LidarDataProcessor processor) {
     int offset = 0;
 	int sin_len = sizeof(struct sockaddr);
 	
-	recvfrom((p->fd), buff, BUFF_SIZE, 0, (struct sockaddr *) &(p->addr), &sin_len);
-    
-    if(processor) {
-        processor(buff, offset, BUFF_SIZE);
-    }
+	
+	while(1) {
+		recvfrom((p->fd), buff, BUFF_SIZE, 0, (struct sockaddr *) &(p->addr), &sin_len);
+	    
+	    if(processor) {
+	        if(!processor(buff, offset, BUFF_SIZE)) {
+	        	break;
+	        }
+	    }
+	}
     
     free(buff);
     debug("[lidar_read_data]<<\n");

@@ -23,9 +23,9 @@ typedef struct {
     double euler_yaw;
 } XsensData;
 
-typedef void (* XsensDataProcessor)(XsensData * pData);
+typedef int (* XsensDataProcessor)(XsensData * pData, void * param);
 
-void readXsensData(const char * device_name, XsensDataProcessor processor);
+void readXsensData(const char * device_name, XsensDataProcessor processor, void * param);
 
 #ifdef __cplusplus
 }
