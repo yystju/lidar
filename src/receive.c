@@ -11,13 +11,13 @@
 
 #include "vlp16.h"
 
-int port = DATA_PORT;
+int port = 2368;
 
 
 int main(int argc, char * argv[]) {
 	int sin_len;
 	
-	char buffer[1024 * 8];
+	char buffer[1249];
 	
 	int fd;
 	
@@ -34,10 +34,15 @@ int main(int argc, char * argv[]) {
 	bind(fd, (struct sockaddr *)&sin, sizeof(sin));
 	
 	while(1) {
-		recvfrom(fd, buffer, sizeof(buffer), 0, (struct sockaddr *) &sin, &sin_len);
+		memset(buffer, '\0', sizeof(buffer));
 		
-		printf("Received packet from %s:%d\n", inet_ntoa(sin.sin_addr), ntohs(sin.sin_port));
-		printf("RECEIVED \"%s\" \n", buffer);
+		recvfrom(fd, buffer, 1248, 0, (struct sockaddr *) &sin, &sin_len);
+		
+		//printf("Received packet from %s:%d\n", inet_ntoa(sin.sin_addr), ntohs(sin.sin_port));
+		
+		buffer[1248] = '\0';
+		
+		printf("RECEIVED [%d]\"%s\" \n", strlen(buffer), buffer);
 		
 		if(strncmp(buffer, "STOP", 4) == 0) {
 			printf("DONE.\n");

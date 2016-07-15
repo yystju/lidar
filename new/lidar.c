@@ -13,11 +13,12 @@
 extern "C" {
 #endif
 
-const int BUFF_SIZE = 1024 * 1024 * 8;
+//const int BUFF_SIZE = 1024 * 1024 * 8;
 
 typedef struct {
 	struct sockaddr_in addr;
 	int fd;
+	int buff_size;
 } LIDAR_IMPL;
 
 int enableBroadCast(int fd) {
@@ -35,15 +36,26 @@ LIDAR lidar_send_init(int port) {
     (p->addr).sin_family = AF_INET;
     (p->addr).sin_addr.s_addr = inet_addr("255.255.255.255");
     (p->addr).sin_port=htons(port);
+    
+    //TODO: find a way to choose buffer size...
+    if(port == LIDAR_DATA_PORT) {
+    	p->buff_size = LIDAR_DATA_PACKET_SIZE;
+    } else if(port == LIDAR_SYNC_PORT) {
+    	p->buff_size = LIDAR_SYNC_PACKET_SIZE;
+    } else {
+    	p->buff_size = 1024 * 4;
+    }
+    
+    debug("buff_size : %d.\n", p->buff_size);
 	
 	if ((p->fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-		debug("Failed to open socket to UDP %d.", port);
+		error("Failed to open socket to UDP %d.\n", port);
 		free(p);
         return NULL;
     }
     
     if(enableBroadCast(p->fd) < 0) {
-		debug("Failed to enable broadcast.");
+		error("Failed to enable broadcast.\n");
 		free(p);
     	return NULL;
     }
@@ -65,6 +77,15 @@ LIDAR lidar_receive_init(int port) {
 	(p->addr).sin_family = AF_INET;
 	(p->addr).sin_addr.s_addr = htonl(INADDR_ANY);
 	(p->addr).sin_port = htons(port);
+	
+	//TODO: find a way to choose buffer size...
+    if(port == LIDAR_DATA_PORT) {
+    	p->buff_size = LIDAR_DATA_PACKET_SIZE;
+    } else if(port == LIDAR_SYNC_PORT) {
+    	p->buff_size = LIDAR_SYNC_PACKET_SIZE;
+    } else {
+    	p->buff_size = 1024 * 4;
+    }
 	
 	(p->fd) = socket(AF_INET, SOCK_DGRAM, 0);
 	bind((p->fd), (struct sockaddr *)&(p->addr), sizeof(struct sockaddr_in));
@@ -95,27 +116,41 @@ void lidar_write_data(LIDAR lidar, char * data, int start, int len) {
     debug("[lidar_write_data]<<\n");
 }
 
-void lidar_read_data(LIDAR lidar, LidarDataProcessor processor) {
+void lidar_read_data(LIDAR lidar, LidarDataProcessor processor, void * param) {
     debug("[lidar_read_data]>>\n");
 	
 	LIDAR_IMPL * p = (LIDAR_IMPL *)lidar;
 	
-    char *buff = malloc(BUFF_SIZE);
+	debug("[lidar_read_data]>> buff_size : %d\n", p->buff_size);
+	
+    char *buff = malloc(p->buff_size);
+    
+    debug("[lidar_read_data]>> buff : %p\n", buff);
+    
     int offset = 0;
+    
 	int sin_len = sizeof(struct sockaddr);
 	
-	
 	while(1) {
-		recvfrom((p->fd), buff, BUFF_SIZE, 0, (struct sockaddr *) &(p->addr), &sin_len);
+		memset(buff, '\0', p->buff_size);
+		
+		debug("[lidar_read_data]>> start receive...\n");
+		
+		int n = recvfrom((p->fd), buff, p->buff_size, 0, (struct sockaddr *) &(p->addr), &sin_len);
+		
+		debug("[lidar_read_data]>> received %d bytes.\n", n);
 	    
-	    if(processor) {
-	        if(!processor(buff, offset, BUFF_SIZE)) {
+	    if(n > 0 && processor) {
+	    	debug("[lidar_read_data] run processor %p.\n", processor);
+	    	
+	        if(!processor(buff, offset, p->buff_size, param)) {
 	        	break;
 	        }
 	    }
 	}
     
     free(buff);
+    
     debug("[lidar_read_data]<<\n");
 }
 

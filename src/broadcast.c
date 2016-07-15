@@ -24,8 +24,13 @@ int main(int argc, char *argv[]) {
     int data_fd;
     int gps_fd;
     
-    char *data_message = "DATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATADATA";
+    char * temp = "ABCDFGHIJKLMNOPQ";
+    
+    char *data_message[1249];
+    
     char *gps_message = "$GPRMC,024813.640,A,3158.4608,N,11848.3737,E,10.05,324.27,150706,,,A*50";
+    
+    int i;
     
     /* set up destination address */
     memset(&data_addr,0,sizeof(data_addr));
@@ -57,6 +62,14 @@ int main(int argc, char *argv[]) {
     	perror("enable broadcast");
         exit(1);
     }
+    
+    memset(data_message, '\0', 1249);
+    
+    for(i = 0; i < 1248 / 16; ++i) {
+        strncat(&data_message, temp, 16);
+    }
+    
+    printf("%s\n", &data_message);
 
     while (1) {
         if (sendto(data_fd, data_message, strlen(data_message), 0,(struct sockaddr *) &data_addr, sizeof(data_addr)) < 0) {

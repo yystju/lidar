@@ -78,6 +78,8 @@ void debug(const char *p, ...) {
     va_start(ap, p);
     dump(debug_fp, p, ap);
     va_end(ap);
+    
+    fflush(debug_fp);
 }
 
 void info(const char *p, ...) {
@@ -90,6 +92,8 @@ void info(const char *p, ...) {
     va_start(ap, p);
     dump(info_fp, p, ap);
     va_end(ap);
+    
+    fflush(info_fp);
 }
 
 void error(const char *p, ...) {
@@ -102,6 +106,8 @@ void error(const char *p, ...) {
     va_start(ap, p);
     dump(error_fp, p, ap);
     va_end(ap);
+    
+    fflush(error_fp);
 }
 
 int file_exits(const char * file_name) {

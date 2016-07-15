@@ -16,6 +16,9 @@
 
 static int done = 0;
 
+
+//[xsens]
+
 int xsensDataProcessor(XsensData * pData, void * param) {
     if(near_zero(pData->euler_roll) && near_zero(pData->euler_pitch) && near_zero(pData->euler_yaw)) return !done;
     
@@ -46,26 +49,6 @@ int xsensDataProcessor(XsensData * pData, void * param) {
     return !done;
 }
 
-int lidar2368DataProcessor(char *p, int start, int len) {
-    debug("[lidar2368DataProcessor]>>\n");
-    
-    debug("p : %p, start : %d, len %d\n", p, start, len);
-    
-    debug("[lidar2368DataProcessor]<<\n");
-    
-    return !done;
-}
-
-int lidar8308DataProcessor(char *p, int start, int len) {
-    debug("[lidar8308DataProcessor]>>\n");
-    
-    debug("p : %p, start : %d, len %d\n", p, start, len);
-    
-    debug("[lidar8308DataProcessor]<<\n");
-    
-    return !done;
-}
-
 typedef struct {
     Configuration * configurations;
     FILE * fp;
@@ -89,51 +72,66 @@ void * xsenThread (void * p) {
     pthread_exit(NULL);
 }
 
-// void * lidar10110Thread (void * p) {
-//     debug("[lidar10110Thread] p : %p\n", p);
+//[lidar 2368]
+
+int lidar2368DataProcessor(char *p, int start, int len, void * param) {
+    debug("[lidar2368DataProcessor]>> param : %p\n", param);
     
-//     Configuration * configurations = (Configuration *)p;
+    FILE * fp = (FILE *) param;
     
-// 	LIDAR lidar = lidar_send_init(LIDAR_TIME_PORT);
-	
-// 	char * str = "HELLO";
-	
-//     while(1) {
-// 		lidar_write_data(lidar, str, 0, strlen(str));
-// 		sleep(1);
-// 	}
-	
-// 	lidar_dispose(lidar);
+    debug("p : %p, start : %d, len %d\n", p, start, len);
     
-//     pthread_exit(NULL);
-// }
+    if(fp && p) {
+        fwrite((char *)(p + start), sizeof(char), len, fp);
+        fflush(fp);
+    }
+    
+    debug("[lidar2368DataProcessor]<<\n");
+    
+    return !done;
+}
 
 void * lidar2368Thread (void * p) {
     debug("[lidar2368Thread] p : %p\n", p);
     
-    Configuration * configurations = (Configuration *)p;
+    FILE * fp = (FILE *)p;
     
 	LIDAR lidar = lidar_receive_init(LIDAR_DATA_PORT);
 	
-    while(1) {
-		lidar_read_data(lidar, lidar2368DataProcessor);
-	}
+    lidar_read_data(lidar, lidar2368DataProcessor, (void *)fp);
 	
 	lidar_dispose(lidar);
     
     pthread_exit(NULL);
 }
 
+//[lidar 8308]
+
+int lidar8308DataProcessor(char *p, int start, int len, void * param) {
+    debug("[lidar8308DataProcessor]>> param : %p\n", param);
+    
+    FILE * fp = (FILE *) param;
+    
+    debug("p : %p, start : %d, len %d\n", p, start, len);
+    
+    if(fp && p) {
+        fwrite((char *)(p + start), sizeof(char), len, fp);
+        fflush(fp);
+    }
+    
+    debug("[lidar8308DataProcessor]<<\n");
+    
+    return !done;
+}
+
 void * lidar8308Thread (void * p) {
     debug("[lidar8308Thread] p : %p\n", p);
     
-    Configuration * configurations = (Configuration *)p;
+    FILE * fp = (FILE *)p;
     
 	LIDAR lidar = lidar_receive_init(LIDAR_SYNC_PORT);
 	
-    while(1) {
-		lidar_read_data(lidar, lidar8308DataProcessor);
-	}
+    lidar_read_data(lidar, lidar8308DataProcessor, (void *)fp);
 	
 	lidar_dispose(lidar);
     
@@ -172,16 +170,10 @@ int start(int argc, char * argv[]) {
     //Start processing threads.
     
 //  pthread_t main_thread_handler = pthread_self();
+	pthread_t xsens_thread_handler;
+	
     pthread_t lidar_2368_thread_handler;
     pthread_t lidar_8308_thread_handler;
-	pthread_t xsens_thread_handler;
-//    pthread_t lidar_10110_thread_handler;
-	
-	pthread_create(&lidar_2368_thread_handler, NULL, lidar2368Thread, (void *)fp_lidar_2368);
-	bind_thread_cpu(lidar_2368_thread_handler, cpu_core_count - 0);
-	
-	pthread_create(&lidar_8308_thread_handler, NULL, lidar8308Thread, (void *)fp_lidar_8308);
-	bind_thread_cpu(lidar_8308_thread_handler, cpu_core_count - 1);
 	
 	XsensThreadData xsensThreadData;
 	
@@ -191,17 +183,23 @@ int start(int argc, char * argv[]) {
 	pthread_create(&xsens_thread_handler, NULL, xsenThread, (void *)(&xsensThreadData));
 	bind_thread_cpu(xsens_thread_handler, cpu_core_count - 2);
 	
-// 	pthread_create(&lidar_10110_thread_handler, NULL, lidar10110Thread, (void *)configurations);
-// 	bind_thread_cpu(lidar_10110_thread_handler, cpu_core_count - 3);
+	pthread_create(&lidar_2368_thread_handler, NULL, lidar2368Thread, (void *)fp_lidar_2368);
+	bind_thread_cpu(lidar_2368_thread_handler, cpu_core_count - 0);
+	
+	pthread_create(&lidar_8308_thread_handler, NULL, lidar8308Thread, (void *)fp_lidar_8308);
+	bind_thread_cpu(lidar_8308_thread_handler, cpu_core_count - 1);
+	
+	
     
 	debug("Waiting for any key...\n");
 	
 	fputs("Press any key...", stdout);
-	fgetc(stdout);
+	fgetc(stdin);
 	
 	done = 1;
 	
-	debug("Start to dispose.\n");
+	debug("Key has been pressed.\n");
+	debug("Start to dispose...\n");
 	
 	pthread_join(lidar_2368_thread_handler, (void *)NULL);
 	pthread_join(lidar_8308_thread_handler, (void *)NULL);
