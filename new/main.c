@@ -19,12 +19,17 @@ static int done = 0;
 
 //[xsens]
 
+typedef struct {
+    LIDAR lidar;
+    FILE * fp;
+} XsensProcessorData;
+
 int xsensDataProcessor(XsensData * pData, void * param) {
     if(near_zero(pData->euler_roll) && near_zero(pData->euler_pitch) && near_zero(pData->euler_yaw)) return !done;
     
     debug("[xsensDataProcessor]>> param : %p\n", param);
     
-    LIDAR lidar = (LIDAR)param;
+    XsensProcessorData * data = (XsensProcessorData *)param;
     
     debug("quaternion : [%f %f %f %f]\n", pData->quaternion_w, pData->quaternion_x, pData->quaternion_y, pData->quaternion_z);
     
@@ -39,20 +44,18 @@ int xsensDataProcessor(XsensData * pData, void * param) {
         
         format_gprmc(buff, 1024, pData->year, pData->month, pData->day, pData->hour, pData->minute, pData->second);
         
-        lidar_write_data(lidar, buff, 0, strlen(buff));
+        lidar_write_data(data->lidar, buff, 0, strlen(buff));
         
         free(buff);
     }
-/*
-    FILE * fp = (FILE *) param;
     
-    debug("p : %p, start : %d, len %d\n", p, start, len);
+    debug("pData : %p, len %d\n", pData, sizeof(XsensData));
     
-    if(fp && p) {
-        fwrite((char *)(p + start), sizeof(char), len, fp);
-        fflush(fp);
+    if(data->fp && pData) {
+        fwrite((char *)pData, sizeof(XsensData), 1, data->fp);
+        fflush(data->fp);
     }
-*/    
+    
     debug("[xsensDataProcessor]<<\n");
     
     return !done;
@@ -72,11 +75,17 @@ void * xsenThread (void * p) {
     
     debug("ins_device : %s\n", ins_device);
     
-    LIDAR lidar = lidar_send_init(LIDAR_TIME_PORT);
+    //LIDAR lidar = lidar_send_init(LIDAR_TIME_PORT);
     
-    readXsensData(ins_device, xsensDataProcessor, lidar);
+    XsensProcessorData processorData;
     
-    lidar_dispose(lidar);
+    processorData.lidar = lidar_send_init(LIDAR_TIME_PORT);
+    
+    processorData.fp = data->fp;
+    
+    readXsensData(ins_device, xsensDataProcessor, processorData.lidar);
+    
+    lidar_dispose(processorData.lidar);
     
     pthread_exit(NULL);
 }

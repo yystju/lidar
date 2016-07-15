@@ -17,6 +17,7 @@ OBJ       = helper.o aes.o repository.o raspi.o deviceclass.o xsens_api_wrapper.
 all: main
 
 main: $(OBJ)
+	$(MAKE) -C ../src_cpp $(MFLAGS)
 	$(CXX) -o $@ $(OBJ) $(CXXFLAGS) $(LIBS)
 
 %.o: %.c $(DEPS_H)
@@ -27,3 +28,4 @@ main: $(OBJ)
 
 clean:
 	rm -f *.o main *.log
+	$(MAKE) -C ../src_cpp clean
