@@ -9,8 +9,8 @@ extern "C" {
 #define LIDAR_SYNC_PORT 8308
 #define LIDAR_TIME_PORT 10110
 
-#define LIDAR_DATA_PACKET_SIZE 1248
-#define LIDAR_SYNC_PACKET_SIZE 554
+#define LIDAR_DATA_PACKET_SIZE 1206
+#define LIDAR_SYNC_PACKET_SIZE 512
 
 typedef int (* LidarDataProcessor)(char *p, int start, int len, void * param);
 

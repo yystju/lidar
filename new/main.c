@@ -43,7 +43,16 @@ int xsensDataProcessor(XsensData * pData, void * param) {
         
         free(buff);
     }
+/*
+    FILE * fp = (FILE *) param;
     
+    debug("p : %p, start : %d, len %d\n", p, start, len);
+    
+    if(fp && p) {
+        fwrite((char *)(p + start), sizeof(char), len, fp);
+        fflush(fp);
+    }
+*/    
     debug("[xsensDataProcessor]<<\n");
     
     return !done;
