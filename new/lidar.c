@@ -104,7 +104,7 @@ void lidar_dispose(LIDAR lidar) {
 }
 
 void lidar_write_data(LIDAR lidar, char * data, int start, int len) {
-    debug("[lidar_write_data]>>\n");
+    debug("[lidar_write_data]>> data : %p, start : %d, len : %d\n", data, start , len);
 	
 	LIDAR_IMPL * p = (LIDAR_IMPL *)lidar;
 	

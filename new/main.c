@@ -49,7 +49,7 @@ int xsensDataProcessor(XsensData * pData, void * param) {
         free(buff);
     }
     
-    debug("pData : %p, len %d\n", pData, sizeof(XsensData));
+    debug("## lidar : %p, fp : %p, pData : %p, len %d\n", data->lidar, data->fp, pData, sizeof(XsensData));
     
     if(data->fp && pData) {
         fwrite((char *)pData, sizeof(XsensData), 1, data->fp);
@@ -82,8 +82,10 @@ void * xsenThread (void * p) {
     processorData.lidar = lidar_send_init(LIDAR_TIME_PORT);
     
     processorData.fp = data->fp;
+
+    debug("## processorData.fp : %p, processorData.fp : %p\n", data->fp, processorData.fp);
     
-    readXsensData(ins_device, xsensDataProcessor, processorData.lidar);
+    readXsensData(ins_device, xsensDataProcessor, &processorData);
     
     lidar_dispose(processorData.lidar);
     
@@ -197,6 +199,7 @@ int start(int argc, char * argv[]) {
 	
 	xsensThreadData.configurations = configurations;
 	xsensThreadData.fp = fp_ins;
+	debug("## fp : %p\n", fp_ins);
 	
 	pthread_create(&xsens_thread_handler, NULL, xsenThread, (void *)(&xsensThreadData));
 	bind_thread_cpu(xsens_thread_handler, cpu_core_count - 2);

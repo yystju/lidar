@@ -173,6 +173,7 @@ int xsens_wrapper_read(XSENS xsens, XsensData * pData) {
 		
 		//Time
 		XsUtcTime now = packet.utcTime();
+		//XsUtcTime now = XsUtcTime::currentTime(); //For test only...
 		
 // 		std::cout << int(now.m_year - 1900) << "-" << int(now.m_month) << "-" << int(now.m_day) << " " << int(now.m_hour) << ":" << int(now.m_minute) << ":" << int(now.m_second) << std::endl;
 		
