@@ -1,5 +1,11 @@
 #!/bin/sh
 
+cd xsens
+
+make
+
+cd ..
+
 mkdir -p build
 
 cd build
