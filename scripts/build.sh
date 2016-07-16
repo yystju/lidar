@@ -14,4 +14,7 @@ cmake ..
 
 make
 
-make package
+#make package
+
+cpack
+
