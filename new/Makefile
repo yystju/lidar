@@ -8,7 +8,7 @@ DEPS_H    = $(wildcard *.h)
 
 #-- For real build --
 LIBS      = -L../src_cpp/xcommunication -L../src_cpp/xstypes -lxcommunication -lxstypes -lm -lpthread -luuid -lwiringPi
-OBJ       = helper.o aes.o repository.o raspi.o deviceclass.o xsens_api_wrapper.o xsens.o lidar.o main.o 
+OBJ       = helper.o aes.o repository.o raspi.o serial.o deviceclass.o xsens_api_wrapper.o xsens.o lidar.o main.o 
 
 #-- Only for development --
 #LIBS      = -lm -lpthread -luuid

@@ -4,6 +4,8 @@
 #include "raspi.h"
 #include "helper.h"
 
+#include "serial.h"
+
 #include "repository.h"
 
 #include <string.h>
@@ -20,8 +22,10 @@ static int done = 0;
 //[xsens]
 
 typedef struct {
+    int is_serial;
     LIDAR lidar;
     FILE * fp;
+    SERIAL serial;
 } XsensProcessorData;
 
 int xsensDataProcessor(XsensData * pData, void * param) {
@@ -44,7 +48,11 @@ int xsensDataProcessor(XsensData * pData, void * param) {
         
         format_gprmc(buff, 1024, pData->year, pData->month, pData->day, pData->hour, pData->minute, pData->second);
         
-        lidar_write_data(data->lidar, buff, 0, strlen(buff));
+        if(data->is_serial) {
+            serial_write(data->serial, buff, strlen(buff));
+        } else {
+            lidar_write_data(data->lidar, buff, 0, strlen(buff));
+        }
         
         free(buff);
     }
@@ -75,11 +83,25 @@ void * xsenThread (void * p) {
     
     debug("ins_device : %s\n", ins_device);
     
-    //LIDAR lidar = lidar_send_init(LIDAR_TIME_PORT);
+    const char * lidar_serial_device = (const char *)get_configuration(data->configurations, "lidar.serial.device");
+    
+    debug("lidar_serial_device : %s\n", lidar_serial_device);
     
     XsensProcessorData processorData;
     
-    processorData.lidar = lidar_send_init(LIDAR_TIME_PORT);
+    if(file_exits(lidar_serial_device)) {
+        processorData.is_serial = 1;
+        
+        processorData.serial = serial_open(lidar_serial_device);
+        
+        processorData.lidar = NULL;
+    } else {
+        processorData.is_serial = 0;
+        
+        processorData.serial = NULL;
+        
+        processorData.lidar = lidar_send_init(LIDAR_TIME_PORT);
+    }
     
     processorData.fp = data->fp;
 
@@ -87,7 +109,13 @@ void * xsenThread (void * p) {
     
     readXsensData(ins_device, xsensDataProcessor, &processorData);
     
-    lidar_dispose(processorData.lidar);
+    if(processorData.serial) {
+        serial_close(processorData.serial);
+    }
+    
+    if(processorData.lidar) {
+        lidar_dispose(processorData.lidar);
+    }
     
     pthread_exit(NULL);
 }
