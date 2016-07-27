@@ -11,6 +11,8 @@ set(CMAKE_CXX_COMPILER "g++-4.8")
 SET (CMAKE_BUILD_TYPE "Debug")
 SET (CMAKE_INSTALL_PREFIX "/opt/lidar")
 
+#ADD_SUBDIRECTORY(../xsens/)
+
 SET(CMAKE_C_FLAGS_DEBUG "$ENV{CFLAGS} -O0 -Wall -g -ggdb -std=c99 -Wno-implicit-function-declaration")
 SET(CMAKE_C_FLAGS_RELEASE "$ENV{CFLAGS} -O3 -Wall -std=c99 -Wno-implicit-function-declaration")
 

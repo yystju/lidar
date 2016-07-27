@@ -7,3 +7,9 @@ cmake_install.cmake
 install_manifest.txt
 /build/
 .c9/
+*.o
+*.d
+*.dpp
+xsens/*/*.a
+xsens/example
+

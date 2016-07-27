@@ -16,6 +16,10 @@
 
 #include <stdio.h>
 
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+
 static int done = 0;
 
 
@@ -358,9 +362,51 @@ int test_xsens(int argc, char * argv[]) {
     dispose_configuration(configurations);
 }
 
+int test_udp (int argc, char * argv[]) {
+    struct sockaddr_in addr;
+	int fd;
+	
+	memset(&(addr),0,sizeof(struct sockaddr_in));
+	
+	(addr).sin_family = AF_INET;
+    (addr).sin_addr.s_addr = inet_addr("255.255.255.255");
+    (addr).sin_port=htons(10110);
+	
+	if ((fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+		error("Failed to open socket to UDP %d.\n", 10110);
+        return NULL;
+    }
+    
+    if(enableBroadCast(fd) < 0) {
+		error("Failed to enable broadcast.\n");
+    	return NULL;
+    }
+	
+	char * buff = (char *)malloc(sizeof(char) * 1024);
+	int len = 0;
+        
+	memset(buff, '\0', sizeof(char) * 1024);
+	
+	format_gprmc(buff, 1024, 2016, 07, 23, 20, 39, 00);
+	while(1) {
+		if (sendto(fd, buff, strlen(buff), 0,(struct sockaddr *) &(addr), sizeof(struct sockaddr_in)) < 0) {
+			debug("Failed to send UDP broadcast packet.");
+			return;
+		}
+		
+		usleep(100);
+	}
+	
+	free(buff);
+    
+	close(fd);
+	
+    return 0;
+}
+
 int main(int argc, char * argv[]) {    
     //return test_encoder_decoder(argc, argv);
     //return test_xsens(argc, argv);
     //return test_repository(argc, argv);
-    return start(argc, argv);
+    return test_udp(argc, argv);
 }
