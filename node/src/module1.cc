@@ -1,7 +1,10 @@
+#include <iostream>
 #include <node.h>
+#include "Hello.h"
 
-namespace n {
+namespace M {
 	using namespace v8;
+	using node::AtExit;
 	
 	void TestCall(const FunctionCallbackInfo<Value>& args) {
 		Isolate * isolate = args.GetIsolate();
@@ -27,8 +30,8 @@ namespace n {
 	void RunCallback(const FunctionCallbackInfo<Value>& args) {
 		Isolate* isolate = args.GetIsolate();
 		Local<Function> cb = Local<Function>::Cast(args[0]);
-		const unsigned argc = 1;
-		Local<Value> argv[argc] = { String::NewFromUtf8(isolate, "hello world") };
+		const unsigned argc = 2;
+		Local<Value> argv[argc] = { String::NewFromUtf8(isolate, "hello world"), Number::New(isolate, 20.5) };
 		cb->Call(Null(isolate), argc, argv);
 	}
 	
@@ -41,6 +44,12 @@ namespace n {
 		args.GetReturnValue().Set(obj);
 	}
 	
+	static void at_exit_cb(void* arg) {
+		Isolate* isolate = static_cast<Isolate*>(arg);
+
+		std::cout << "[at_exit_cb]" << std::endl;
+	}
+
 	void init(Local<Object> exports, Local<Object> module) {
 		//NODE_SET_METHOD(module, "exports", RunCallback);
 		
@@ -48,6 +57,10 @@ namespace n {
 		NODE_SET_METHOD(exports, "test", TestCall);
 		
 		NODE_SET_METHOD(exports, "newInstance", CreateObject);
+
+		Hello::Init(exports);
+
+		AtExit(at_exit_cb, exports->GetIsolate());
 	}
 	
 	NODE_MODULE(module1, init);

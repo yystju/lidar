@@ -14,9 +14,15 @@ app.use(compression({filter: function (req, res) {
 }}));
 
 module1.call((msg) => {
-  console.log(msg);
-  console.log(module1.test(1, 2));
-  console.log(module1.newInstance('What\'s up?').msg);
+  //console.log(msg);
+  //console.log(module1.test(1, 2));
+  //console.log(module1.newInstance('What\'s up?').msg);
+  
+  var obj = new module1.Hello(10);
+  
+  for(var i = 0; i < 10; ++i) {
+	console.log(obj.plusOne());
+  }
 });
 
 app.get('/hello.action', function (req, res) {
