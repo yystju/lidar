@@ -1,3 +1,14 @@
+[steps to get started]
+ $ cd xsens
+ $ make
+ $ cd ../node
+ $ npm install
+ $ cd ..
+ $ mkdir build
+ $ cd build
+ $ cmake ..
+ $ make
+
 [libuuid]
 sudo apt-get install uuid-dev
 
