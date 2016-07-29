@@ -16,9 +16,13 @@
 
 #include <stdio.h>
 
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
+#define TEST_UDP
+
+#ifdef TEST_UDP
+    #include <netinet/in.h>
+    #include <arpa/inet.h>
+    #include <netdb.h>
+#endif
 
 static int done = 0;
 
@@ -362,6 +366,7 @@ int test_xsens(int argc, char * argv[]) {
     dispose_configuration(configurations);
 }
 
+#ifdef TEST_UDP
 int test_udp (int argc, char * argv[]) {
     struct sockaddr_in addr;
 	int fd;
@@ -403,10 +408,13 @@ int test_udp (int argc, char * argv[]) {
 	
     return 0;
 }
+#endif
 
 int main(int argc, char * argv[]) {    
     //return test_encoder_decoder(argc, argv);
     //return test_xsens(argc, argv);
     //return test_repository(argc, argv);
+#ifdef TEST_UDP
     return test_udp(argc, argv);
+#endif
 }

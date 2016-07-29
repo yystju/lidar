@@ -12,4 +12,5 @@ install_manifest.txt
 *.dpp
 xsens/*/*.a
 xsens/example
-
+node/node_modules
+node/build
