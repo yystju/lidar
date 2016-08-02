@@ -13,8 +13,8 @@ SET (CMAKE_INSTALL_PREFIX "/opt/lidar")
 
 #ADD_SUBDIRECTORY(../xsens/)
 
-SET(CMAKE_C_FLAGS_DEBUG "$ENV{CFLAGS} -O0 -Wall -g -ggdb -std=c99 -Wno-implicit-function-declaration")
-SET(CMAKE_C_FLAGS_RELEASE "$ENV{CFLAGS} -O3 -Wall -std=c99 -Wno-implicit-function-declaration")
+SET(CMAKE_C_FLAGS_DEBUG "$ENV{CFLAGS} -O0 -Wall -g -ggdb -std=c99 -Wno-implicit-function-declaration -Wno-pointer-sign")
+SET(CMAKE_C_FLAGS_RELEASE "$ENV{CFLAGS} -O3 -Wall -std=c99 -Wno-implicit-function-declaration -Wno-pointer-sign")
 
 SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -std=c++11 -O0 -Wall -g -ggdb")
 SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -std=c++11 -O3 -Wall")

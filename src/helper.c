@@ -141,7 +141,7 @@ int format_gprmc(char * buff, size_t buff_len, int year, int month, int day, int
   
   snprintf(date_buff, 20, "%02d%02d%02d", day, month, (year > 100 ? year - 100 : year));
   snprintf(time_buff, 20, "%02d%02d%02d", hour, minute, second);
-  cx = snprintf(buff, buff_len, "$GPRMC,%s,A,%.2f,%s,%.2f,%s,%05.1f,%05.1f,%s,%05.1f,%s", time_buff, 0.0f, "N", 0.0f,"W", 0.0f, 0.0f, date_buff, 20.312, "E");
+  cx = snprintf(buff, buff_len, "$GPRMC,%s,A,%.2f,%s,%.2f,%s,%05.1f,%05.1f,%s,%05.1f,%s",time_buff,0.0f,"N",0.0f,"W",0.0f,0.0f,date_buff,20.312, "E");
   
   debug("## time_buff : %s\n", time_buff);
   debug("## date_buff : %s\n", date_buff);
@@ -153,13 +153,13 @@ int format_gprmc(char * buff, size_t buff_len, int year, int month, int day, int
   }
   
   //if(buff_len - cx > 3) {
-      cx += snprintf(buff + cx, buff_len - cx, "*%d", checksum);
+      cx += snprintf(buff + cx, buff_len - cx, "*%X", checksum);
   //}
   //if(buff_len - cx > 1) {
   //    buff[++cx] = '\n';
   //}
 
-  strncat(buff, "\n", buff_len - cx);
+  //strncat(buff, "\n", buff_len - cx);
   
   debug("## buff : %s\n", buff);
   return cx;

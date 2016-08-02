@@ -79,6 +79,8 @@ int test1(int x) {
     cout << endl;
     
     debug("[xsens_wrapper_test] %s\n", (*a).c_str());
+    
+    return 0;
 }
 
 int xsens_wrapper_test(void) {
@@ -190,7 +192,7 @@ int xsens_wrapper_read(XSENS xsens, XsensData * pData) {
 		
 		if(packet.containsVelocity()) {
     		//Velocity
-    		XsVector velocity = packet.velocity();
+    		//XsVector velocity = packet.velocity();
     
     // 		std::cout << "V[";
     
@@ -207,7 +209,7 @@ int xsens_wrapper_read(XSENS xsens, XsensData * pData) {
         }
         
         if (packet.containsAltitude()) {
-			double altitude = packet.altitude();
+			//double altitude = packet.altitude();
 		}
 	}
 	msgs.clear();

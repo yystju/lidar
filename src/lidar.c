@@ -68,7 +68,7 @@ LIDAR lidar_send_init(int port) {
 LIDAR lidar_receive_init(int port) {
 	debug("[lidar_receive_init]>>\n");
 	
-	int sin_len = sizeof(struct sockaddr_in);
+	//int sin_len = sizeof(struct sockaddr_in);
 	
 	LIDAR_IMPL * p = (LIDAR_IMPL *)malloc(sizeof(LIDAR_IMPL));
 	

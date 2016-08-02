@@ -91,19 +91,27 @@ void * xsenThread (void * p) {
     
     debug("ins_device : %s\n", ins_device);
     
+    const char * lidar_type = (const char *)get_configuration(data->configurations, "lidar.type");
+    
+    debug("lidar_type : %s\n", lidar_type);
+    
     const char * lidar_serial_device = (const char *)get_configuration(data->configurations, "lidar.serial.device");
     
     debug("lidar_serial_device : %s\n", lidar_serial_device);
     
     XsensProcessorData processorData;
     
-    if(file_exits(lidar_serial_device)) {
+    if(strcmp("serial", lidar_type) == 0) {
+        debug("[will send GPRMC via serial]\n");
+        
         processorData.is_serial = 1;
         
         processorData.serial = serial_open(lidar_serial_device);
         
         processorData.lidar = NULL;
     } else {
+        debug("[will send GPRMC via 10110 UDP port]\n");
+        
         processorData.is_serial = 0;
         
         processorData.serial = NULL;
@@ -203,7 +211,7 @@ int start(int argc, char * argv[]) {
     
     debug("cpu_core_count = %d\n", cpu_core_count);
     
-    Configuration * configurations = read_configuration_file("./test.ini", 5);
+    Configuration * configurations = read_configuration_file("./test.ini", 10);
     
     const char * repo_root = (const char *)get_configuration(configurations, "repository.root");
     
@@ -364,6 +372,8 @@ int test_xsens(int argc, char * argv[]) {
     readXsensData(ins_device, xsensDataProcessor, (void *) NULL);
     
     dispose_configuration(configurations);
+    
+    return 0;
 }
 
 #ifdef TEST_UDP
@@ -379,24 +389,25 @@ int test_udp (int argc, char * argv[]) {
 	
 	if ((fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 		error("Failed to open socket to UDP %d.\n", 10110);
-        return NULL;
+        return -1;
     }
     
     if(enableBroadCast(fd) < 0) {
 		error("Failed to enable broadcast.\n");
-    	return NULL;
+    	return -2;
     }
 	
 	char * buff = (char *)malloc(sizeof(char) * 1024);
-	int len = 0;
+	//int len = 0;
         
 	memset(buff, '\0', sizeof(char) * 1024);
 	
 	format_gprmc(buff, 1024, 2016, 07, 23, 20, 39, 00);
+	
 	while(1) {
 		if (sendto(fd, buff, strlen(buff), 0,(struct sockaddr *) &(addr), sizeof(struct sockaddr_in)) < 0) {
 			debug("Failed to send UDP broadcast packet.");
-			return;
+			return -3;
 		}
 		
 		usleep(100);
@@ -404,7 +415,7 @@ int test_udp (int argc, char * argv[]) {
 	
 	free(buff);
     
-	close(fd);
+// 	close(fd);
 	
     return 0;
 }
@@ -415,6 +426,7 @@ int main(int argc, char * argv[]) {
     //return test_xsens(argc, argv);
     //return test_repository(argc, argv);
 #ifdef TEST_UDP
-    return test_udp(argc, argv);
+    //return test_udp(argc, argv);
 #endif
+    return start(argc, argv);
 }
