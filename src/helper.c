@@ -127,6 +127,8 @@ void bind_thread_cpu(pthread_t threadId, int cpu_number) {
 int format_gprmc(char * buff, size_t buff_len, int year, int month, int day, int hour, int minute, int second)
 {
   int cx;
+  int i;
+  char checksum = 0x00;
   
   char date_buff[20];
   char time_buff[20];
@@ -146,9 +148,7 @@ int format_gprmc(char * buff, size_t buff_len, int year, int month, int day, int
   debug("## time_buff : %s\n", time_buff);
   debug("## date_buff : %s\n", date_buff);
   
-  char checksum = 0x00;
-  
-  for(int i = 1; i < cx; ++i) {
+  for(i = 1; i < cx; ++i) {
       checksum = checksum ^ buff[i];
   }
   
@@ -241,8 +241,9 @@ void dispose_configuration(Configuration * configurations) {
 }
 
 const char * get_configuration(Configuration * configurations, const char * key) {
+	int i;
     if(configurations) {
-        for(int i = 0; i < configurations->length; ++i) {
+        for(i = 0; i < configurations->length; ++i) {
             if(strcmp((configurations->pConfig)[i].key, key) == 0) {
                 return (configurations->pConfig)[i].value;
             }
@@ -256,6 +257,7 @@ const char * get_configuration(Configuration * configurations, const char * key)
  */
 int encode_data(char * dest, char * src, int n) {
   int len = 0;
+  int i;
     
   char * pkey = "1qazxsw23edcvfr4";
   
@@ -265,7 +267,7 @@ int encode_data(char * dest, char * src, int n) {
   
   memset(dest, '\0', n);
   
-  for(int i  = 0; i < n; i = i + 16) {
+  for(i  = 0; i < n; i = i + 16) {
       aes_encrypt(&aes, dest + i, src + i);
       len += 16;
   }
@@ -286,6 +288,8 @@ int encode_data(char * dest, char * src, int n) {
 
 int decode_data(char * dest, char * src, int n) {
   int len = 0;
+  
+  int i;
 
   char * pkey = "1qazxsw23edcvfr4";
   
@@ -297,7 +301,7 @@ int decode_data(char * dest, char * src, int n) {
   
   memset(dest, '\0', n);
   
-  for(int i  = 0; i < n; i = i + 16) {
+  for(i  = 0; i < n; i = i + 16) {
       aes_decrypt(&aes, dest + i, src + i);
       len += 16;
   }

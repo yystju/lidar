@@ -11,7 +11,7 @@ extern "C" {
 
 typedef int (* RaspiBlinkCallback)(void * param);
 
-void raspi_blink(int n, RaspiBlinkCallback callback, void * param);
+int raspi_blink(int n, RaspiBlinkCallback callback, void * param);
     
 #ifdef __cplusplus
 }
