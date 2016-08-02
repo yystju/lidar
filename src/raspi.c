@@ -6,16 +6,35 @@
 extern "C" {
 #endif
     
-void blink(int n) {
+void raspi_blink(int n, RaspiBlinkCallback callback, void * param) {
   wiringPiSetup();
   
-  pinMode(0, OUTPUT);
+  pinMode(GPIO_PIN, OUTPUT);
   
-  for (int i = 0; i < n; ++i) {
-    digitalWrite(0, HIGH);
-    delay(500);
-    digitalWrite(0, LOW);
-    delay(500);
+  if(n > 0) {
+    for (int i = 0; i < n; ++i) {
+      digitalWrite(GPIO_PIN, HIGH);
+      delay(250);
+      
+      if(callback) {
+        callback(param);
+      }
+      
+      digitalWrite(GPIO_PIN, LOW);
+      delay(750);
+    }
+  } else {
+    while(1) {
+      digitalWrite(GPIO_PIN, HIGH);
+      delay(250);
+      
+      if(callback) {
+        callback(param);
+      }
+      
+      digitalWrite(GPIO_PIN, LOW);
+      delay(750);
+    }
   }
 }
     
