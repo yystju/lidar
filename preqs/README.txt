@@ -50,3 +50,7 @@ find_path(UUID_INCLUDE_DIRS NAMES uuid.h)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(uuid DEFAULT_MSG UUID_LIBRARIES UUID_INCLUDE_DIRS)
+
+
+[tcpdump]
+tcpdump -i eth0 -n -x udp port 10110 -s 0 -c 1 -w dump.pcap
