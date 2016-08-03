@@ -54,3 +54,11 @@ find_package_handle_standard_args(uuid DEFAULT_MSG UUID_LIBRARIES UUID_INCLUDE_D
 
 [tcpdump]
 tcpdump -i eth0 -n -x udp port 10110 -s 0 -c 1 -w dump.pcap
+
+[PROBLEM - SOLUTION]
+PROBLEM:
+ [bad udp cksum 0x8673 -> 0x62f1!]
+ 
+SOLUTION:
+ ethtool -K eth0 tx off rx off
+ #To check the changes, use "ethtool -k eth0".

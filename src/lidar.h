@@ -21,7 +21,7 @@ typedef struct {
   char payload[1206];
 } LIDAR_DATA_PACKET;
 
-LIDAR lidar_send_init(int port);
+LIDAR lidar_send_init(const char * adapter, int port);
 LIDAR lidar_receive_init(int port);
 void lidar_dispose(LIDAR p);
 

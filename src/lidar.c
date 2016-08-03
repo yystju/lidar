@@ -5,9 +5,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+#include <sys/ioctl.h>
+#include <net/if.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+
+#include <errno.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,6 +24,7 @@ extern "C" {
 //const int BUFF_SIZE = 1024 * 1024 * 8;
 
 typedef struct {
+	char broadcast_addr_str [255];
 	struct sockaddr_in addr;
 	int fd;
 	int buff_size;
@@ -26,15 +35,78 @@ int enableBroadCast(int fd) {
 	return setsockopt(fd, SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
 }
 
-LIDAR lidar_send_init(int port) {
+LIDAR lidar_send_init(const char * adapter, int port) {
+	char sk_buf[1024];
+	
+	struct ifconf ifc;
+	struct ifreq *ifr;
+	
+	int nInterfaces;
+	int i;
+  
 	debug("[lidar_send_init]>>\n");
 	
 	LIDAR_IMPL * p = (LIDAR_IMPL *)malloc(sizeof(LIDAR_IMPL));
 	
 	memset(&(p->addr),0,sizeof(struct sockaddr_in));
 	
+	if ((p->fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+		error("[lidar_send_init] Failed to open socket to UDP %d.\n", port);
+		free(p);
+        return NULL;
+    }
+    
+    ifc.ifc_len = sizeof(sk_buf);
+	ifc.ifc_buf = sk_buf;
+	
+	if(ioctl(p->fd, SIOCGIFCONF, &ifc) < 0) {
+	  error("[lidar_send_init] ioctl(SIOCGIFCONF) failed %s.\n", strerror(errno));
+	  close(p->fd);
+	  free(p);
+	  return NULL;
+	}
+	
+	ifr = ifc.ifc_req;
+	nInterfaces = ifc.ifc_len / sizeof(struct ifreq);
+	
+	for(i = 0; i < nInterfaces; i++)
+	{
+	  struct ifreq *item = &ifr[i];
+	  
+	  debug("Found Interface. [%s] %s\n", item->ifr_name, inet_ntoa(((struct sockaddr_in *)&item->ifr_addr)->sin_addr));
+	    
+	  if(strcmp(adapter, item->ifr_name) == 0) {
+	  	debug("Select Interface. [%s] %s\n", item->ifr_name, inet_ntoa(((struct sockaddr_in *)&item->ifr_addr)->sin_addr));
+	  	
+	  	if(ioctl(p->fd, SIOCGIFHWADDR, item) < 0) {
+	  		error("[lidar_send_init] ioctl(SIOCGIFHWADDR) failed %s.\n", strerror(errno));
+	  		close(p->fd);
+			free(p);
+	  		return NULL;
+	  	}
+	  	
+	  	if(ioctl(p->fd, SIOCGIFBRDADDR, item) >= 0) {
+	  		strcpy(p->broadcast_addr_str, inet_ntoa(((struct sockaddr_in *)&item->ifr_broadaddr)->sin_addr));
+	  		debug("[lidar_send_init] BROADCAST %s\n", p->broadcast_addr_str);
+	  	} else {
+	  		close(p->fd);
+			free(p);
+	  		return NULL;
+	  	}
+	  	
+	  	break;
+	  }
+	}
+    
+    if(enableBroadCast(p->fd) < 0) {
+		error("[lidar_send_init] Failed to enable broadcast.\n");
+		close(p->fd);
+		free(p);
+    	return NULL;
+    }
+    
     (p->addr).sin_family = AF_INET;
-    (p->addr).sin_addr.s_addr = inet_addr("255.255.255.255");
+    (p->addr).sin_addr.s_addr = inet_addr(p->broadcast_addr_str);
     (p->addr).sin_port=htons(port);
     
     //TODO: find a way to choose buffer size...
@@ -46,19 +118,7 @@ LIDAR lidar_send_init(int port) {
     	p->buff_size = 1024 * 4;
     }
     
-    debug("buff_size : %d.\n", p->buff_size);
-	
-	if ((p->fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-		error("Failed to open socket to UDP %d.\n", port);
-		free(p);
-        return NULL;
-    }
-    
-    if(enableBroadCast(p->fd) < 0) {
-		error("Failed to enable broadcast.\n");
-		free(p);
-    	return NULL;
-    }
+    debug("[lidar_send_init] buff_size : %d.\n", p->buff_size);
 	
     debug("[lidar_send_init]<<\n");
 	
@@ -109,7 +169,7 @@ void lidar_write_data(LIDAR lidar, char * data, int start, int len) {
 	LIDAR_IMPL * p = (LIDAR_IMPL *)lidar;
 	
 	if (sendto(p->fd, data, len, start,(struct sockaddr *) &(p->addr), sizeof(struct sockaddr_in)) < 0) {
-		debug("Failed to send UDP broadcast packet.");
+		debug("[lidar_send_init] Failed to send UDP broadcast packet.\n");
 		return;
 	}
 	

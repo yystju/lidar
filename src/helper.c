@@ -139,14 +139,14 @@ int format_gprmc(char * buff, size_t buff_len, int year, int month, int day, int
  
   if(year > 1900) year -= 1900;
 
-  debug("## year : %d\n", year);
+  debug("[format_gprmc] year : %d\n", year);
   
   snprintf(date_buff, 20, "%02d%02d%02d", day, month, (year > 100 ? year - 100 : year));
   snprintf(time_buff, 20, "%02d%02d%02d", hour, minute, second);
   cx = snprintf(buff, buff_len, "$GPRMC,%s,A,%.2f,%s,%.2f,%s,%05.1f,%05.1f,%s,%05.1f,%s",time_buff,0.0f,"N",0.0f,"W",0.0f,0.0f,date_buff,0.0f, "E");
   
-  debug("## time_buff : %s\n", time_buff);
-  debug("## date_buff : %s\n", date_buff);
+  debug("[format_gprmc] time_buff : %s\n", time_buff);
+  debug("[format_gprmc] date_buff : %s\n", date_buff);
   
   for(i = 1; i < cx; ++i) {
       checksum = checksum ^ buff[i];
@@ -161,7 +161,7 @@ int format_gprmc(char * buff, size_t buff_len, int year, int month, int day, int
 
   //strncat(buff, "\n", buff_len - cx);
   
-  debug("## buff : %s\n", buff);
+  debug("[format_gprmc] buff : %s\n", buff);
   return cx;
 }
 

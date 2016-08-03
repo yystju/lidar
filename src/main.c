@@ -90,6 +90,10 @@ void * xsenThread (void * p) {
     
     debug("lidar_serial_device : %s\n", lidar_serial_device);
     
+    const char * lidar_udp_adapter = (const char *)get_configuration(data->configurations, "lidar.udp.adapter");
+    
+    debug("lidar_udp_adapter : %s\n", lidar_udp_adapter);
+    
     XsensProcessorData processorData;
     
     if(strcmp("serial", lidar_type) == 0) {
@@ -107,7 +111,7 @@ void * xsenThread (void * p) {
         
         processorData.serial = NULL;
         
-        processorData.lidar = lidar_send_init(LIDAR_TIME_PORT);
+        processorData.lidar = lidar_send_init(lidar_udp_adapter, LIDAR_TIME_PORT);
     }
     
     processorData.fp = data->fp;
@@ -202,7 +206,7 @@ int start(int argc, char * argv[]) {
     
     debug("cpu_core_count = %d\n", cpu_core_count);
     
-    Configuration * configurations = read_configuration_file("./test.ini", 10);
+    Configuration * configurations = read_configuration_file("./main.ini", 10);
     
     const char * repo_root = (const char *)get_configuration(configurations, "repository.root");
     
@@ -282,7 +286,7 @@ int start(int argc, char * argv[]) {
 }
 
 int test_repository (int argc, char * argv[]) {
-     Configuration * configurations = read_configuration_file("./test.ini", 5);
+     Configuration * configurations = read_configuration_file("./main.ini", 5);
     
     const char * ins_device = (const char *)get_configuration(configurations, "repository.root");
     
@@ -350,7 +354,7 @@ int test_encoder_decoder(int argc, char * argv[]) {
 }
 
 int test_xsens(int argc, char * argv[]) {
-    Configuration * configurations = read_configuration_file("./test.ini", 5);
+    Configuration * configurations = read_configuration_file("./main.ini", 5);
     
     // for(int i = 0; i < configurations->length; ++i) {
     //     debug("[%s=%s]\n", (configurations->pConfig)[i].key, (configurations->pConfig)[i].value);
