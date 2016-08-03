@@ -2,7 +2,7 @@
 	"targets": [
 		{
 			"target_name": "module1",
-			"sources": ["src/module1.cc", "src/Hello.cc"],
+			"sources": ["src/module1.cpp", "src/Hello.cpp"],
 		}
 	]
 }

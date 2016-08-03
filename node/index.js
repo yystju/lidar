@@ -1,7 +1,5 @@
 var      express = require('express');
 var  compression = require('compression');
-var      module1 = require('./build/Release/module1');
-
 
 var app = express();
 
@@ -12,18 +10,6 @@ app.use(compression({filter: function (req, res) {
   
   return compression.filter(req, res);
 }}));
-
-module1.call((msg) => {
-  //console.log(msg);
-  //console.log(module1.test(1, 2));
-  //console.log(module1.newInstance('What\'s up?').msg);
-  
-  var obj = new module1.Hello(10);
-  
-  for(var i = 0; i < 10; ++i) {
-	console.log(obj.plusOne());
-  }
-});
 
 app.get('/hello.action', function (req, res) {
   res.send('Hello World!');
