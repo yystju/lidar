@@ -11,8 +11,14 @@ app.use(compression({filter: function (req, res) {
   return compression.filter(req, res);
 }}));
 
-app.get('/hello.action', function (req, res) {
-  res.send('Hello World!');
+app.get('/hello', function (req, res) {
+  res.type('json');
+  res.status(200).json({
+    p1: 'Hello',
+    p2: new Date(),
+    p3: 5,
+    p4: ['heihei']
+  });
 });
 
 app.get('/events', function (req, res) {
