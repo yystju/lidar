@@ -1,0 +1,24 @@
+{
+  "name": "lidar",
+  "homepage": "https://github.com/yystju/lidar",
+  "authors": [
+    "yystju <yystju@hotmail.com>"
+  ],
+  "description": "",
+  "main": "index.html",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.1.0",
+    "bootstrap": "^3.3.7",
+    "bootstrap-switch": "^3.3.2",
+    "angular": "angularjs#^1.5.8"
+  }
+}

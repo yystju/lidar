@@ -9,8 +9,12 @@
     <link rel="icon" type="image/png" href="./imgs/lidar.png" />
 
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="./bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css" type="text/css"  />
+    <link rel="stylesheet" href="./css/dashboard.css" type="text/css" />
+
+    <!--[if lt IE 9]>
 
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -25,7 +29,7 @@
         @viewport         { width: device-width; }
     </style>
     
-    <link rel="stylesheet" href="./css/dashboard.css" type="text/css" />
+    
   </head>
   <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -84,6 +88,32 @@
               <li class="list-group-item">&nbsp;</li>
             </ul>
           </div>
+          <div class="row placeholders">
+          <form class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="inputEmail">Email</label>
+                <div class="controls">
+                    <input type="text" id="inputEmail" placeholder="Email">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="notification1">Notification 1</label>
+                <div class="controls">
+                    <div class="switch" tabindex="0">
+                        <input id="notification1" type="checkbox" checked="checked"/>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="notification2">Notification 2</label>
+                <div class="controls">
+                    <div class="switch" tabindex="0">
+                        <input id="notification2" type="checkbox" />
+                    </div>
+                </div>
+            </div>
+          </form>
+          </div>
           <!--<div class="row placeholders">-->
           <!--  <div class="col-xs-6 col-sm-3 placeholder">-->
           <!--    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">-->
@@ -108,7 +138,7 @@
           <!--</div>-->
 
           <h2 class="sub-header">系统状态信息</h2>
-          <div class="table-responsive">
+          <!-- <div class="table-responsive">
             <table class="table table-striped">
               <thead>
                 <tr>
@@ -121,7 +151,9 @@
               </thead>
               <tbody>
                 <tr>
-                  <td>1,001</td>
+                  <td>
+                    
+                  </td>
                   <td>Lorem</td>
                   <td>ipsum</td>
                   <td>dolor</td>
@@ -234,16 +266,26 @@
                 </tr>
               </tbody>
             </table>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
 
-    <script type="text/javascript" src="./js/jquery-3.1.0.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-    <!--<script type="text/javascript" src="./js/angular-1.5.8/angular.js"></script>-->
-    <script type="text/javascript" src="./js/angular-1.5.8/angular.min.js"></script>
+    <script type="text/javascript" src="./bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./bower_components/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
+    <!--<script type="text/javascript" src="./bower_components/angular/angular.js"></script>-->
+    <script type="text/javascript" src="./bower_components/angular/angular.min.js"></script>
     <script type="text/javascript" src="./js/index_controller.js"></script>
+    <script type="">
+      $(document).ready(function() {
+        $("#notification1").bootstrapSwitch();
+        $("#notification2").bootstrapSwitch();
+        $('#mySwitch').on('switch-change', function (e, data) {
+          var $el = $(data.el), value = data.value;
+              console.log(e, $el, value);
+          });
+      });
+    </script>
   </body>
 </html>
