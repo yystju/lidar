@@ -31,4 +31,18 @@ describe('module1', function() {
       assert.equal(21, obj.plusOne(), 'Get 21.');
     });
   });
+  
+  describe('getCPUTemperature', function() {
+    it('should get the temperature.', function() {
+      var temperature = module1.getCPUTemperature();
+      console.log('temperature : %d', temperature);
+    });
+  });
+  describe('getProcessMemoryUsage', function() {
+    it('should get the memory usage.', function() {
+      var usage = module1.getProcessMemoryUsage();
+      console.log('usage : %f', usage);
+    });
+  });
+  
 });

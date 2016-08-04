@@ -1,6 +1,8 @@
 var      express = require('express');
 var  compression = require('compression');
 
+var module1 = require('./build/Release/module1');
+
 var app = express();
 
 app.use(compression({filter: function (req, res) {
@@ -18,6 +20,14 @@ app.get('/hello', function (req, res) {
     p2: new Date(),
     p3: 5,
     p4: ['heihei']
+  });
+});
+
+app.get('/sys/stat', function (req, res) {
+  res.type('json');
+  res.status(200).json({
+    cpu_temp: module1.getCPUTemperature(),
+    mem_usage: module1.getProcessMemoryUsage()
   });
 });
 
