@@ -19,6 +19,7 @@
     "jquery": "^3.1.0",
     "bootstrap": "^3.3.7",
     "bootstrap-switch": "^3.3.2",
-    "angular": "angularjs#^1.5.8"
+    "angular": "angularjs#^1.5.8",
+    "chart.js": "npm:chart.js#^2.2.1"
   }
 }

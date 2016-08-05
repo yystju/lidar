@@ -62,3 +62,15 @@ PROBLEM:
 SOLUTION:
  ethtool -K eth0 tx off rx off
  #To check the changes, use "ethtool -k eth0".
+
+
+-----html-----
+[.bowerrc]
+{
+  "resolvers": [
+    "bower-npm-resolver"
+  ]
+}
+
+npm install -g bower-npm-resolver
+# bower install npm:chart.js --save

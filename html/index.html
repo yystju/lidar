@@ -27,6 +27,32 @@
         @-ms-viewport     { width: device-width; }
         @-o-viewport      { width: device-width; }
         @viewport         { width: device-width; }
+        
+        
+        fieldset.scheduler-border {
+          border: 1px groove #ddd !important;
+          padding: 0 1.4em 1.4em 1.4em !important;
+          margin: 0 0 1.5em 0 !important;
+          border-radius: 5px;
+          -webkit-box-shadow:  0px 0px 0px 0px #000;
+                  box-shadow:  0px 0px 0px 0px #000;
+        }
+        
+        legend.scheduler-border {
+          font-size: 1.2em !important;
+          font-weight: bold !important;
+          text-align: left !important;
+          
+          width:inherit; /* Or auto */
+          padding:0 10px; /* To give a bit of padding on the left and right */
+          border-bottom:none;
+        }
+        
+        .chart {
+          display: inline !important;
+          width: 50%;
+          height: 50%;
+        }
     </style>
     
     
@@ -41,7 +67,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">管理器</a>
+          <a class="navbar-brand" href="#">&nbsp;</a>
         </div>
         <!--<div id="navbar" class="navbar-collapse collapse">-->
         <!--  <ul class="nav navbar-nav navbar-right">-->
@@ -81,6 +107,34 @@
         <!--</div>-->
         <div class="main" ng-app="IndexApp" ng-controller="SystemStateController" ng-init="refresh();"><!--col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2-->
           <h1 class="page-header">控制面板</h1>
+          <fieldset class="scheduler-border">
+          <legend class="scheduler-border">系统状态信息</legend>
+          <div class="row placeholders">
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <!--<img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">-->
+              <canvas id="chart_cpu" class="chart"></canvas>
+              <h4>CPU %</h4>
+              <span class="text-muted">&nbsp;</span>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <!--<img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">-->
+              <canvas id="chart_memory" class="chart"></canvas>
+              <h4>Memory %</h4>
+              <span class="text-muted">&nbsp;</span>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <!--<img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">-->
+              <canvas id="chart_io" class="chart"></canvas>
+              <h4>IO %</h4>
+              <span class="text-muted">&nbsp;</span>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <!--<img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">-->
+              <canvas id="chart_network" class="chart"></canvas>
+              <h4>Network %</h4>
+              <span class="text-muted">&nbsp;</span>
+            </div>
+          </div>
           <div class="row placeholders">
             <ul class="list-group">
               <li class="list-group-item text text_init">CPU Temperature: {{stat.cpu_temp}}</li>
@@ -88,57 +142,34 @@
               <li class="list-group-item">&nbsp;</li>
             </ul>
           </div>
-          <div class="row placeholders">
-          <form class="form-horizontal">
-            <div class="control-group">
-                <label class="control-label" for="inputEmail">Email</label>
-                <div class="controls">
-                    <input type="text" id="inputEmail" placeholder="Email">
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label" for="notification1">Notification 1</label>
-                <div class="controls">
-                    <div class="switch" tabindex="0">
-                        <input id="notification1" type="checkbox" checked="checked"/>
-                    </div>
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label" for="notification2">Notification 2</label>
-                <div class="controls">
-                    <div class="switch" tabindex="0">
-                        <input id="notification2" type="checkbox" />
-                    </div>
-                </div>
-            </div>
-          </form>
+          </fieldset>
+          <fieldset class="scheduler-border">
+          <legend class="scheduler-border">配置</legend>
+          <div class="row placeholders col-md-13">
+            <form name="myform" role="form" novalidate>
+               <div class="form-group">
+                  <label class="control-label" for="fullName">Address Line</label>
+                  <input required type="text" name="addr" id="addr" class="form-control" placeholder="Address"/>
+               </div>
+               <div class="form-inline">
+                  <div class="form-group">
+                     <label>State</label>
+                     <span class="switch" tabindex="0"><input id="notification1" type="checkbox" /></span>
+                  </div>
+                  <div class="form-group">
+                     <label>ZIP</label>
+                     <span class="switch" tabindex="0"><input id="notification2" type="checkbox" /></span>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label class="control-label" for="country">Country</label>
+                  <input required type="text" name="country" id="country" class="form-control" placeholder="country"/>
+               </div>
+            </form>
           </div>
-          <!--<div class="row placeholders">-->
-          <!--  <div class="col-xs-6 col-sm-3 placeholder">-->
-          <!--    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">-->
-          <!--    <h4>Label</h4>-->
-          <!--    <span class="text-muted">Something else</span>-->
-          <!--  </div>-->
-          <!--  <div class="col-xs-6 col-sm-3 placeholder">-->
-          <!--    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">-->
-          <!--    <h4>Label</h4>-->
-          <!--    <span class="text-muted">Something else</span>-->
-          <!--  </div>-->
-          <!--  <div class="col-xs-6 col-sm-3 placeholder">-->
-          <!--    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">-->
-          <!--    <h4>Label</h4>-->
-          <!--    <span class="text-muted">Something else</span>-->
-          <!--  </div>-->
-          <!--  <div class="col-xs-6 col-sm-3 placeholder">-->
-          <!--    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">-->
-          <!--    <h4>Label</h4>-->
-          <!--    <span class="text-muted">Something else</span>-->
-          <!--  </div>-->
-          <!--</div>-->
-
-          <h2 class="sub-header">系统状态信息</h2>
-          <!-- <div class="table-responsive">
+          </fieldset>
+          <!-- <h2 class="sub-header">系统状态信息</h2>
+          <div class="table-responsive">
             <table class="table table-striped">
               <thead>
                 <tr>
@@ -266,19 +297,104 @@
                 </tr>
               </tbody>
             </table>
-          </div> -->
-        </div>
+          </div>
+        </div> -->
       </div>
     </div>
 
     <script type="text/javascript" src="./bower_components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="./bower_components/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
+    <script type="text/javascript" src="./bower_components/chart.js/dist/Chart.js"></script>
     <!--<script type="text/javascript" src="./bower_components/angular/angular.js"></script>-->
     <script type="text/javascript" src="./bower_components/angular/angular.min.js"></script>
     <script type="text/javascript" src="./js/index_controller.js"></script>
-    <script type="">
+    <script type="text/javascript">
+      /*global $*/
+      /*global Chart*/
+      
       $(document).ready(function() {
+        var options = {
+          animation: {
+            duration: 1000
+          },
+          //responsive:false,
+          maintainAspectRatio: false,
+          elements: {
+            arc: {
+             borderColor: "#000000"
+            }
+          },
+          legend: {
+            display: false
+          },
+        };
+        
+        var data_cpu = {
+          labels: ['Used', 'Unused'],
+          datasets: [{
+            data: [25, 75],
+            backgroundColor: [
+              "#FF6384",
+              "#36A2EB"
+            ],
+            hoverBackgroundColor: [
+              "#FF6384",
+              "#36A2EB"
+            ]
+          }]
+        };
+        
+        var data_memory = {
+          labels: ['Used', 'Unused'],
+          datasets: [{
+            data: [100, 200],
+            backgroundColor: [
+              "#FF6384",
+              "#36A2EB"
+            ],
+            hoverBackgroundColor: [
+              "#FF6384",
+              "#36A2EB"
+            ]
+          }]
+        };
+        
+        var data_io = {
+          labels: ['Used', 'Unused'],
+          datasets: [{
+            data: [100, 200],
+            backgroundColor: [
+              "#FF6384",
+              "#36A2EB"
+            ],
+            hoverBackgroundColor: [
+              "#FF6384",
+              "#36A2EB"
+            ]
+          }]
+        };
+        
+        var data_network = {
+          labels: ['Used', 'Unused'],
+          datasets: [{
+            data: [100, 200],
+            backgroundColor: [
+              "#FF6384",
+              "#36A2EB"
+            ],
+            hoverBackgroundColor: [
+              "#FF6384",
+              "#36A2EB"
+            ]
+          }]
+        };
+        
+        var chart_cpu = new Chart($('#chart_cpu'), {type: 'pie', data: data_cpu, options: options});
+        var chart_memory = new Chart($('#chart_memory'), {type: 'pie', data: data_memory, options: options});
+        var chart_io = new Chart($('#chart_io'), {type: 'pie', data: data_io, options: options});
+        var chart_network = new Chart($('#chart_network'), {type: 'line', data: data_network, options: options});
+        
         $("#notification1").bootstrapSwitch();
         $("#notification2").bootstrapSwitch();
         $('#mySwitch').on('switch-change', function (e, data) {

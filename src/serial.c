@@ -110,9 +110,9 @@ void serial_close(SERIAL serial) {
 void serial_write(SERIAL serial, const char * buff, int len) {
   if(serial && buff && len > 0) {
     SERIAL_IMPL * p = (SERIAL_IMPL *)serial;
-    
+    debug("[serial_write] fd : %p, buff : %p \n", p->fd, buff);
     if(p->fd) {
-      write (p->fd, buff, len);
+      write(p->fd, buff, len);
       tcflush(p->fd, TCIOFLUSH);
     }
   }
