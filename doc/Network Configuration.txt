@@ -1,0 +1,81 @@
+********************************************************************************
+**** NOTE: Please configure all the stuff before restart the raspberry pi.  ****
+**** This is because the eth0 will be configured to be static IP.           ****
+**** After restarted, you can only connect to PI via wifi.                  ****
+********************************************************************************
+1. Install hostapd & udhcpd
+$ sudo apt-get install hostapd udhcpd -y
+---------------------------------------
+2. vi /etc/network/interfaces
+**** Update to be like below ****
+auto eth0
+iface eth0 inet static
+  address 192.168.1.77
+  netmask 255.255.255.0
+allow-hotplug wlan0
+auto wlan0
+  iface wlan0 inet static
+  address 192.168.2.10
+  netmask 255.255.255.0
+**** Update to be like above ****
+---------------------------------------
+3. vi /etc/hostapd/hostapd.conf
+**** Update to be like below ****
+ssid=LiDAR
+interface=wlan0
+hw_mode=g
+channel=1
+driver=nl80211
+wpa=2
+wpa_passphrase=12345678
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP
+ctrl_interface=/var/run/hostapd
+**** Update to be like above ****
+---------------------------------------
+4. vi /etc/default/hostapd
+**** Update to be like below ****
+DAEMON_CONF="/etc/hostapd/hostapd.conf"
+**** Update to be like above ****
+---------------------------------------
+5. vi /etc/udhcpd.conf
+**** Update to be like below ****
+start           192.168.1.20
+end             192.168.1.40
+interface       wlan0
+max_leases      20
+option subnet   255.255.255.0
+option router   192.168.2.10
+**** Update to be like above ****
+---------------------------------------
+6. touch /var/lib/misc/udhcpd.leases 
+---------------------------------------
+7. vi /etc/default/udhcpd
+**** Update to be like below ****
+#DHCPD_ENABLED="no"
+DHCPD_OPTS="-S /etc/udhcpd.conf"
+**** Update to be like above ****
+---------------------------------------
+7. IPTABLES (http://blog.csdn.net/maijian/article/details/8825227)
+
+7.1 sudo vi /etc/sysctl.conf
+**** Update to be like below ****
+net.ipv4.ip_forward=1
+**** Update to be like above ****
+
+7.2 Update iptables
+$ sudo su -
+# iptables -F
+# iptables -X
+# iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+# iptables-save > /etc/iptables.up.rules
+# exit
+
+7.3 sudo vi /etc/network/if-pre-up.d/iptables
+**** Input below ****
+#!/bin/bash
+/sbin/iptables-restore < /etc/iptables.up.rules
+**** Input above ****
+
+7.4 sudo chmod 755 /etc/network/if-pre-up.d/iptables

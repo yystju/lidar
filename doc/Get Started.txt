@@ -1,0 +1,22 @@
+[Prerequisite]
+Go through the "Environment Preparation Steps.txt" before this doc.
+[Build]
+$ cd xsens
+$ make
+$ cd ../node
+$ npm install
+$ cd ..
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+$ cd ..
+[Run Web Server]
+$ cd node
+$ nohup npm start &
+$ cd ..
+>> You can use "npm test" or "mocha" under "node" folder to do unit testing.
+[Run Sampler]
+$ cd build
+>> You can check the main.ini for configuration before run next step.
+$ sudo ./main

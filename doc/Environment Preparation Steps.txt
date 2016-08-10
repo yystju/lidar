@@ -1,0 +1,52 @@
+[Prerequisite]
+Go through the "Network Configuration.txt" before this doc.
+1. Update Raspbian.
+$ sudo apt-get update -y && apt-get upgrade -y
+---------------------------------------
+2. Install gcc-4.8, g++4.8
+$ sudo apt-get install gcc-4.8 g++-4.8 -y
+---------------------------------------
+3. Install cmake
+$ sudo apt-get install cmake -y
+---------------------------------------
+4. Install git
+$ sudo apt-get install git -y
+---------------------------------------
+5. Install libuuid
+$ sudo apt-get install uuid-dev -y
+---------------------------------------
+6. Install WiringPi
+(NOTE: You may need to su to root)
+$ git clone git://git.drogon.net/wiringPi
+$ cd wiringPi
+$ git pull origin
+$ ./build
+---------------------------------------
+7. Add cmake files for UUID & WiringPi. (You need to figure out the cmake version in order to replace the string "-3.x")
+$ sudo copy FindUUID.cmake FindWiringPi.cmake /usr/share/cmake-3.x/Modules/
+---------------------------------------
+8. *OPTIONAL* Install tcpdump
+$ sudo apt-get install tcpdump
+---------------------------------------
+9. Install nodejs
+$ sudo su -
+Download the latest nodejs for ARMv7 binary from https://nodejs.org/en/download/. (Below is an example)
+# cd /opt
+# curl -O https://nodejs.org/dist/v4.4.7/node-v4.4.7-linux-armv71.tar.xz
+# tar -xf node-v4.4.7-linux-armv71.tar.xz 
+# ln -s node-v4.4.7-linux-armv71 node
+# vi ~/.bashrc
+>> Now you need to add node to $PATH. "export PATH=/opt/node/bin:$PATH"
+>> NOTE: There's an old version of nodejs in the current Raspbian image. So you need to add it to the front side of PATH.
+# exit
+$ vi ~/.bashrc
+>> Now you need to add node to $PATH. "export PATH=/opt/node/bin:$PATH"
+>> NOTE: There's an old version of nodejs in the current Raspbian image. So you need to add it to the front side of PATH.
+$ sudo su -
+# npm install -g node-gyp
+# npm install -g mocha
+# npm install -g bower
+# npm install -g bower-npm-resolver
+# exit
+$ 
+---------------------------------------

@@ -1,0 +1,52 @@
+VLP-16: 192.168.1.201
+eth0: 192.168.1.##
+
+RASPBERRYPI MAC: b8:27:eb:d4:82:f6
+
+
+Data Packet PORT 2368
+Data Packet 1248 (42 header, 1206 payload) 
+	1206 data = 12 x 100 bytes + 4 bytes time stamp + 2 bytes factory.
+	100 byte = 2 bytes [FFEE] + 2 bytes (rotational angle) + 32x3 bytes data.
+	
+	
+Azimuth Value
+1) Get Azimuth Values: 0x33 & 0x71
+2) Reverse the bytes: 0x71 & 0x33
+3) Combine the bytes into a two-byte, unsigned integer: 0x7133
+4) Convert to decimal: 28,979
+5) Divide by 100
+6) Result: 289.79°
+
+
+Data Record
+Each three-byte data record consists of two distance bytes and a calibrated reflectivity byte.
+The distance is reported to the nearest 2.0mm, meaning that the unsigned integer value given by the two distance bytes needs to be multiplied by 2.0mm to calculate the absolute distance to the object. -->>-- Max distance = 1310.70m
+
+--------------------------------
+Position Packet PORT 8308
+
+554 bytes 
+
+42 byte Ethernet header
+198 bytes Unused
+4 bytes Timestamp
+4 bytes Unused
+72 byte NMEA $GPRMC sentence
+234 bytes Unused
+
+$GPRMC 
+$GPRMC,220516,A,5133.82,N,00042.24,W,173.8,231.8,130694,004.2,W*70
+     1      2 3       4 5        6 7     8     9     10    11   12
+1 220516 Time Stamp
+2 A validity - A-ok, V-invalid
+3 5133.82 current Latitude
+4 N North/South
+5 00042.24 current Longitude
+6 W East/West
+7 173.8 Speed in knots
+8 231.8 True course
+9 130694 Date Stamp
+10 004.2 Variation
+11 W East/West
+12 *70 checksum

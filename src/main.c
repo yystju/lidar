@@ -17,15 +17,20 @@
 #include <stdio.h>
 
 static int done = 0;
+static int is_emmit = 0; /*bool variable : 0 -- false, 1 -- true*/
+static int last_second = 0;
+static char grmc_buff[1024];
 
 //[xsens]
+typedef struct {
+    FILE * fp;
+} XsensProcessorData;
 
 typedef struct {
     int is_serial;
     LIDAR lidar;
-    FILE * fp;
     SERIAL serial;
-} XsensProcessorData;
+} LiDARTimeProcessorData;
 
 int xsensDataProcessor(XsensData * pData, void * param) {
     if(near_zero(pData->euler_roll) && near_zero(pData->euler_pitch) && near_zero(pData->euler_yaw)) return !done;
@@ -41,19 +46,17 @@ int xsensDataProcessor(XsensData * pData, void * param) {
     debug("date : %04d-%02d-%02d %02d:%02d:%02d\n", pData->year, pData->month, pData->day, pData->hour, pData->minute, pData->second);
     
     if(pData->year > 0) {
-        char * buff = (char *)malloc(sizeof(char) * 1024);
+		if(!is_emmit && last_second < pData->second) {//need to emmit;
+			last_second = pData->second;
+			
+			memset(grmc_buff, '\0', sizeof(char) * 1024);
         
-        memset(buff, '\0', sizeof(char) * 1024);
-        
-        format_gprmc(buff, 1024, pData->year, pData->month, pData->day, pData->hour, pData->minute, pData->second);
-        
-        if(data->is_serial) {
-            serial_write(data->serial, buff, strlen(buff));
-        } else {
-            lidar_write_data(data->lidar, buff, 0, strlen(buff));
-        }
-        
-        free(buff);
+			format_gprmc(grmc_buff, 1024, pData->year, pData->month, pData->day, pData->hour, pData->minute, pData->second);
+			
+			strncat(grmc_buff, "\n", 1);
+			
+			is_emmit = 1;
+		}
     }
     
     debug("## lidar : %p, fp : %p, pData : %p, len %d\n", data->lidar, data->fp, pData, sizeof(XsensData));
@@ -82,51 +85,13 @@ void * xsenThread (void * p) {
     
     debug("ins_device : %s\n", ins_device);
     
-    const char * lidar_type = (const char *)get_configuration(data->configurations, "lidar.type");
-    
-    debug("lidar_type : %s\n", lidar_type);
-    
-    const char * lidar_serial_device = (const char *)get_configuration(data->configurations, "lidar.serial.device");
-    
-    debug("lidar_serial_device : %s\n", lidar_serial_device);
-    
-    const char * lidar_udp_adapter = (const char *)get_configuration(data->configurations, "lidar.udp.adapter");
-    
-    debug("lidar_udp_adapter : %s\n", lidar_udp_adapter);
-    
     XsensProcessorData processorData;
-    
-    if(strcmp("serial", lidar_type) == 0) {
-        debug("[will send GPRMC via serial]\n");
-        
-        processorData.is_serial = 1;
-        
-        processorData.serial = serial_open(lidar_serial_device);
-        
-        processorData.lidar = NULL;
-    } else {
-        debug("[will send GPRMC via 10110 UDP port]\n");
-        
-        processorData.is_serial = 0;
-        
-        processorData.serial = NULL;
-        
-        processorData.lidar = lidar_send_init(lidar_udp_adapter, LIDAR_TIME_PORT);
-    }
-    
-    processorData.fp = data->fp;
+	
+	processorData.fp = data->fp;
 
-    debug("## processorData.fp : %p, processorData.fp : %p\n", data->fp, processorData.fp);
+    debug("## processorData.fp : %p\n", processorData.fp);
     
     readXsensData(ins_device, xsensDataProcessor, &processorData);
-    
-    if(processorData.serial) {
-        serial_close(processorData.serial);
-    }
-    
-    if(processorData.lidar) {
-        lidar_dispose(processorData.lidar);
-    }
     
     pthread_exit(NULL);
 }
@@ -149,6 +114,76 @@ int lidar2368DataProcessor(char *p, int start, int len, void * param) {
     
     return !done;
 }
+
+//[lidar 10110]
+typedef struct {
+    Configuration * configurations;
+} LiDAR10110ThreadData;
+
+void * lidar10110Thread (void * p) {
+    debug("[lidar10110Thread] p : %p\n", p);
+	
+	LiDAR10110ThreadData * data = (LiDAR10110ThreadData *)p;
+	
+	const char * lidar_type = (const char *)get_configuration(data->configurations, "lidar.type");
+    
+    debug("lidar_type : %s\n", lidar_type);
+    
+    const char * lidar_serial_device = (const char *)get_configuration(data->configurations, "lidar.serial.device");
+    
+    debug("lidar_serial_device : %s\n", lidar_serial_device);
+    
+    const char * lidar_udp_adapter = (const char *)get_configuration(data->configurations, "lidar.udp.adapter");
+    
+    debug("lidar_udp_adapter : %s\n", lidar_udp_adapter);
+	
+	LIDAR lidar = NULL;
+    SERIAL serial = NULL;
+	
+	if(strcmp("serial", lidar_type) == 0) {
+        debug("[will send GPRMC via serial]\n");
+        
+        serial = serial_open(lidar_serial_device);
+        
+        lidar = NULL;
+    } else {
+        debug("[will send GPRMC via 10110 UDP port]\n");
+        
+        serial = NULL;
+        
+        lidar = lidar_send_init(lidar_udp_adapter, LIDAR_TIME_PORT);
+    }
+	
+	while(1) {
+		if(is_emmit) {
+			usleep(100);
+			
+			
+			if(serial) {
+				serial_write(serial, grmc_buff, strlen(grmc_buff));
+			}
+			
+			if(lidar) {
+				lidar_write_data(lidar, grmc_buff, 0, strlen(grmc_buff));
+			}
+			
+			is_emmit = 0;
+		}
+		usleep(100);
+	}
+	
+	if(serial) {
+        serial_close(serial);
+    }
+    
+    if(lidar) {
+        lidar_dispose(lidar);
+    }
+	
+    pthread_exit(NULL);
+}
+
+//[lidar 2368]
 
 void * lidar2368Thread (void * p) {
     debug("[lidar2368Thread] p : %p\n", p);
@@ -231,26 +266,29 @@ int start(int argc, char * argv[]) {
 //  pthread_t main_thread_handler = pthread_self();
 	pthread_t xsens_thread_handler;
 	
+	pthread_t lidar_10110_thread_handler;
     pthread_t lidar_2368_thread_handler;
     pthread_t lidar_8308_thread_handler;
 	
 	XsensThreadData xsensThreadData;
-	
 	xsensThreadData.configurations = configurations;
 	xsensThreadData.fp = fp_ins;
-	debug("## fp : %p\n", fp_ins);
+	
+	LiDAR10110ThreadData lidar10110ThreadData;
+	lidar10110ThreadData.configuration = configuration;
 	
 	pthread_create(&xsens_thread_handler, NULL, xsenThread, (void *)(&xsensThreadData));
-	bind_thread_cpu(xsens_thread_handler, cpu_core_count - 2);
+	bind_thread_cpu(xsens_thread_handler, cpu_core_count - 4)
+	
+	pthread_create(&lidar_10110_thread_handler, NULL, lidar10110Thread, (void *)(NULL));
+	bind_thread_cpu(lidar_10110_thread_handler, cpu_core_count - 1);
 	
 	pthread_create(&lidar_2368_thread_handler, NULL, lidar2368Thread, (void *)fp_lidar_2368);
-	bind_thread_cpu(lidar_2368_thread_handler, cpu_core_count - 0);
+	bind_thread_cpu(lidar_2368_thread_handler, cpu_core_count - 2);
 	
 	pthread_create(&lidar_8308_thread_handler, NULL, lidar8308Thread, (void *)fp_lidar_8308);
-	bind_thread_cpu(lidar_8308_thread_handler, cpu_core_count - 1);
+	bind_thread_cpu(lidar_8308_thread_handler, cpu_core_count - 3);
 	
-	
-    
 	debug("Waiting for any key...\n");
 	
 	fputs("Press any key...", stdout);
@@ -264,7 +302,7 @@ int start(int argc, char * argv[]) {
 	pthread_join(lidar_2368_thread_handler, (void *)NULL);
 	pthread_join(lidar_8308_thread_handler, (void *)NULL);
 	pthread_join(xsens_thread_handler, (void *)NULL);
-// 	pthread_join(lidar_10110_thread_handler, (void *)NULL);
+ 	pthread_join(lidar_10110_thread_handler, (void *)NULL);
 	
 	//Dispose...
     
