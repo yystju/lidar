@@ -170,7 +170,11 @@ int UDPRaspiBlinkCallback(void * param) {
   memset(p->pData, '\0', sizeof(char) * 512);
 	
   format_gprmc(p->pData, 512, tm_now->tm_year, tm_now->tm_mon + 1, tm_now->tm_mday, tm_now->tm_hour, tm_now->tm_min, tm_now->tm_sec);
-  
+
+  strncat(p->pData, "\n", 1);
+
+  debug("data : %s\n", p->pData);
+ 
   return sendto(p->fd, p->pData, strlen(p->pData), 0,(struct sockaddr *) &(p->addr), sizeof(struct sockaddr_in));
 }
 
@@ -188,6 +192,10 @@ int SerialRaspiBlinkCallback(void * param) {
 	
   format_gprmc(p->pData, 512, tm_now->tm_year, tm_now->tm_mon + 1, tm_now->tm_mday, tm_now->tm_hour, tm_now->tm_min, tm_now->tm_sec);
   
+  strncat(p->pData, "\n", 1);
+
+  debug("data : %s\n", p->pData);
+
   serial_write(p->serial, p->pData, strlen(p->pData));
   
   return 0;

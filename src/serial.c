@@ -87,7 +87,7 @@ SERIAL serial_open(const char * file_pathname) {
     
     serial->fd = open(file_pathname, O_RDWR | O_NOCTTY | O_SYNC);
     
-    set_interface_attribs (serial->fd, B115200, 0);
+    set_interface_attribs (serial->fd, B9600, 0);
     
     set_blocking (serial->fd, 0);
   }

@@ -22,14 +22,14 @@ int raspi_blink(int n, RaspiBlinkCallback callback, void * param) {
     }
     
     digitalWrite(GPIO_PIN, HIGH);
-    delay(250);
+    delay(100);
     
     if(callback) {
       rc = callback(param);
     }
     
     digitalWrite(GPIO_PIN, LOW);
-    delay(750);
+    delay(900);
   }
 
   return rc;
