@@ -26,11 +26,11 @@ typedef struct {
     FILE * fp;
 } XsensProcessorData;
 
-typedef struct {
-    int is_serial;
-    LIDAR lidar;
-    SERIAL serial;
-} LiDARTimeProcessorData;
+//typedef struct {
+//    int is_serial;
+//    LIDAR lidar;
+//    SERIAL serial;
+//} LiDARTimeProcessorData;
 
 int xsensDataProcessor(XsensData * pData, void * param) {
     if(near_zero(pData->euler_roll) && near_zero(pData->euler_pitch) && near_zero(pData->euler_yaw)) return !done;
@@ -59,7 +59,7 @@ int xsensDataProcessor(XsensData * pData, void * param) {
 		}
     }
     
-    debug("## lidar : %p, fp : %p, pData : %p, len %d\n", data->lidar, data->fp, pData, sizeof(XsensData));
+    debug("## pData : %p\n", pData, sizeof(XsensData));
     
     if(data->fp && pData) {
         fwrite((char *)pData, sizeof(XsensData), 1, data->fp);
@@ -275,12 +275,12 @@ int start(int argc, char * argv[]) {
 	xsensThreadData.fp = fp_ins;
 	
 	LiDAR10110ThreadData lidar10110ThreadData;
-	lidar10110ThreadData.configuration = configuration;
+	lidar10110ThreadData.configurations = configurations;
 	
 	pthread_create(&xsens_thread_handler, NULL, xsenThread, (void *)(&xsensThreadData));
-	bind_thread_cpu(xsens_thread_handler, cpu_core_count - 4)
+	bind_thread_cpu(xsens_thread_handler, cpu_core_count - 4);
 	
-	pthread_create(&lidar_10110_thread_handler, NULL, lidar10110Thread, (void *)(NULL));
+	pthread_create(&lidar_10110_thread_handler, NULL, lidar10110Thread, (void *)&lidar10110ThreadData);
 	bind_thread_cpu(lidar_10110_thread_handler, cpu_core_count - 1);
 	
 	pthread_create(&lidar_2368_thread_handler, NULL, lidar2368Thread, (void *)fp_lidar_2368);
