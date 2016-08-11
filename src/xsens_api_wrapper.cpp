@@ -175,6 +175,7 @@ int xsens_wrapper_read(XSENS xsens, XsensData * pData) {
         }
 		
 		//Time
+		debug("## contains UTC : %s\n", packet.containsUtcTime() ? "true" : "false");
 		if(packet.containsUtcTime()) {
     		XsUtcTime now = packet.utcTime();
     		//XsUtcTime now = XsUtcTime::currentTime(); //For test only...
