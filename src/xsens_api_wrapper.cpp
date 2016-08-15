@@ -152,12 +152,7 @@ int xsens_wrapper_read(XSENS xsens, XsensData * pData) {
     		pData->quaternion_y = (double)quaternion.m_y;
     		pData->quaternion_z = (double)quaternion.m_z;
     		
-    // 		std::cout << "\r"
-    // 				  << "W:" << std::setw(5) << std::fixed << std::setprecision(2) << quaternion.m_w
-    // 				  << ",X:" << std::setw(5) << std::fixed << std::setprecision(2) << quaternion.m_x
-    // 				  << ",Y:" << std::setw(5) << std::fixed << std::setprecision(2) << quaternion.m_y
-    // 				  << ",Z:" << std::setw(5) << std::fixed << std::setprecision(2) << quaternion.m_z
-    // 		;
+    		debug("[xsens_wrapper_read] quaternion(w,x,y,z) : (%f, %f, %f, %f) \n", pData->quaternion_w, pData->quaternion_x, pData->quaternion_y, pData->quaternion_z);
     
             //Euler
     		XsEuler euler = packet.orientationEuler();
@@ -166,12 +161,7 @@ int xsens_wrapper_read(XSENS xsens, XsensData * pData) {
     		pData->euler_pitch = (double)euler.m_pitch;
     		pData->euler_yaw = (double)euler.m_yaw;
     		
-    // 		std::cout << ",Roll:" << std::setw(7) << std::fixed << std::setprecision(2) << euler.m_roll
-    // 				  << ",Pitch:" << std::setw(7) << std::fixed << std::setprecision(2) << euler.m_pitch
-    // 				  << ",Yaw:" << std::setw(7) << std::fixed << std::setprecision(2) << euler.m_yaw
-    // 		;
-    
-    //        std::cout << std::endl << std::flush;
+    		debug("[xsens_wrapper_read] euler(roll, pitch, yaw) : (%f, %f, %f) \n", pData->euler_roll, pData->euler_pitch, pData->euler_yaw);
         }
 		
 		//Time
@@ -180,8 +170,6 @@ int xsens_wrapper_read(XSENS xsens, XsensData * pData) {
     		XsUtcTime now = packet.utcTime();
     		//XsUtcTime now = XsUtcTime::currentTime(); //For test only...
     		
-    // 		std::cout << int(now.m_year - 1900) << "-" << int(now.m_month) << "-" << int(now.m_day) << " " << int(now.m_hour) << ":" << int(now.m_minute) << ":" << int(now.m_second) << std::endl;
-    		
     		pData->year = int(now.m_year - 1900);
     		
     		pData->month = int(now.m_month);
@@ -189,45 +177,41 @@ int xsens_wrapper_read(XSENS xsens, XsensData * pData) {
     		pData->hour = int(now.m_hour);
     		pData->minute = int(now.m_minute);
     		pData->second = int(now.m_second);
+    		pData->nano = int(now.m_nano);
+    		
+    		debug("[xsens_wrapper_read] utctime(Y-M-D h:m:s.n) : (%d-%d-%d %d:%d:%d.%d) \n", pData->year, pData->month, pData->day, pData->hour, pData->minute, pData->second, pData->nano);
 		}
 		
-		if(packet.containsVelocity()) {
-    		//Velocity
-    		//XsVector velocity = packet.velocity();
-    
-    // 		std::cout << "V[";
-    
-    // 		for (XsSize i = 0; i < velocity.size(); ++i) {
-    // 			XsReal value = velocity[i];
-    // 			if (i != 0) {
-    // 				std::cout << ",";
-    // 			}
-    
-    // 			std::cout << value;
-    // 		}
-    		
-    // 		std::cout << "]" << std::endl;
-        }
+		if (packet.containsVelocity()) {
+			XsVector v = packet.velocity();
+
+			if (v.size() == 3) {
+				const XsReal * p = v.data();
+
+				pData->x = p[0];
+				pData->y = p[1];
+				pData->z = p[2];
+				
+				debug("[xsens_wrapper_read] velocity(x, y, z) : (%df, %f, %f) \n", pData->x, pData->y, pData->z);
+			}
+		}
         
         if (packet.containsAltitude()) {
-			//double altitude = packet.altitude();
+			double altitude = packet.altitude();
+			debug("[xsens_wrapper_read] altitude : %f \n", altitude);
 		}
 		
 		if (packet.containsLatitudeLongitude()) {
 			XsVector v = packet.latitudeLongitude();
-			
-	// 		std::cout << "V[";
-    
-    // 		for (XsSize i = 0; i < velocity.size(); ++i) {
-    // 			XsReal value = v[i];
-    // 			if (i != 0) {
-    // 				std::cout << ",";
-    // 			}
-    
-    // 			std::cout << value;
-    // 		}
-    		
-    // 		std::cout << "]" << std::endl;
+
+			if (v.size() == 2) {
+				const XsReal * p = v.data();
+
+				pData->latitude = p[0];
+				pData->longitude = p[1];
+				
+				debug("[xsens_wrapper_read] (latitude, longitude) : (%df, %f) \n", pData->latitude, pData->longitude);
+			}
 		}
 	}
 	msgs.clear();
@@ -236,7 +220,6 @@ int xsens_wrapper_read(XSENS xsens, XsensData * pData) {
 }
 
 void xsens_wrapper_dispose(XSENS xsens) {
-    
     delete ((Xsens *)xsens);
 }
 

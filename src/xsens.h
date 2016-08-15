@@ -12,15 +12,23 @@ typedef struct {
     int hour;
     int minute;
     int second;
+    int nano;
+    
+    double euler_roll;
+    double euler_pitch;
+    double euler_yaw;
+    
+    double latitude;
+    double longitude;
+    
+    double x;
+    double y;
+    double z;
     
     double quaternion_w;
     double quaternion_x;
     double quaternion_y;
     double quaternion_z;
-    
-    double euler_roll;
-    double euler_pitch;
-    double euler_yaw;
 } XsensData;
 
 typedef int (* XsensDataProcessor)(XsensData * pData, void * param);
