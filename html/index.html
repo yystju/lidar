@@ -111,25 +111,21 @@
           <legend class="scheduler-border">系统状态信息</legend>
           <div class="row placeholders">
             <div class="col-xs-6 col-sm-3 placeholder">
-              <!--<img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">-->
               <canvas id="chart_cpu" class="chart"></canvas>
               <h4>CPU %</h4>
               <span class="text-muted">&nbsp;</span>
             </div>
             <div class="col-xs-6 col-sm-3 placeholder">
-              <!--<img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">-->
               <canvas id="chart_memory" class="chart"></canvas>
               <h4>Memory %</h4>
               <span class="text-muted">&nbsp;</span>
             </div>
             <div class="col-xs-6 col-sm-3 placeholder">
-              <!--<img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">-->
               <canvas id="chart_io" class="chart"></canvas>
               <h4>IO %</h4>
               <span class="text-muted">&nbsp;</span>
             </div>
             <div class="col-xs-6 col-sm-3 placeholder">
-              <!--<img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">-->
               <canvas id="chart_network" class="chart"></canvas>
               <h4>Network %</h4>
               <span class="text-muted">&nbsp;</span>
@@ -335,12 +331,12 @@
           datasets: [{
             data: [25, 75],
             backgroundColor: [
-              "#FF6384",
-              "#36A2EB"
+              '#FF6384',
+              '#36A2EB'
             ],
             hoverBackgroundColor: [
-              "#FF6384",
-              "#36A2EB"
+              '#FF6384',
+              '#36A2EB'
             ]
           }]
         };
@@ -350,12 +346,12 @@
           datasets: [{
             data: [100, 200],
             backgroundColor: [
-              "#FF6384",
-              "#36A2EB"
+              '#FF6384',
+              '#36A2EB'
             ],
             hoverBackgroundColor: [
-              "#FF6384",
-              "#36A2EB"
+              '#FF6384',
+              '#36A2EB'
             ]
           }]
         };
@@ -365,12 +361,12 @@
           datasets: [{
             data: [100, 200],
             backgroundColor: [
-              "#FF6384",
-              "#36A2EB"
+              '#FF6384',
+              '#36A2EB'
             ],
             hoverBackgroundColor: [
-              "#FF6384",
-              "#36A2EB"
+              '#FF6384',
+              '#36A2EB'
             ]
           }]
         };
@@ -380,12 +376,12 @@
           datasets: [{
             data: [100, 200],
             backgroundColor: [
-              "#FF6384",
-              "#36A2EB"
+              '#FF6384',
+              '#36A2EB'
             ],
             hoverBackgroundColor: [
-              "#FF6384",
-              "#36A2EB"
+              '#FF6384',
+              '#36A2EB'
             ]
           }]
         };
@@ -395,8 +391,8 @@
         var chart_io = new Chart($('#chart_io'), {type: 'pie', data: data_io, options: options});
         var chart_network = new Chart($('#chart_network'), {type: 'line', data: data_network, options: options});
         
-        $("#notification1").bootstrapSwitch();
-        $("#notification2").bootstrapSwitch();
+        $('#notification1').bootstrapSwitch();
+        $('#notification2').bootstrapSwitch();
         $('#mySwitch').on('switch-change', function (e, data) {
           var $el = $(data.el), value = data.value;
               console.log(e, $el, value);

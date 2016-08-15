@@ -212,6 +212,23 @@ int xsens_wrapper_read(XSENS xsens, XsensData * pData) {
         if (packet.containsAltitude()) {
 			//double altitude = packet.altitude();
 		}
+		
+		if (packet.containsLatitudeLongitude()) {
+			XsVector v = packet.latitudeLongitude();
+			
+	// 		std::cout << "V[";
+    
+    // 		for (XsSize i = 0; i < velocity.size(); ++i) {
+    // 			XsReal value = v[i];
+    // 			if (i != 0) {
+    // 				std::cout << ",";
+    // 			}
+    
+    // 			std::cout << value;
+    // 		}
+    		
+    // 		std::cout << "]" << std::endl;
+		}
 	}
 	msgs.clear();
 	XsTime::msleep(0);
