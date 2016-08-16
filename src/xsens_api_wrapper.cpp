@@ -192,7 +192,7 @@ int xsens_wrapper_read(XSENS xsens, XsensData * pData) {
 				pData->y = p[1];
 				pData->z = p[2];
 				
-				debug("[xsens_wrapper_read] velocity(x, y, z) : (%df, %f, %f) \n", pData->x, pData->y, pData->z);
+				debug("[xsens_wrapper_read] velocity(x, y, z) : (%f, %f, %f) \n", pData->x, pData->y, pData->z);
 			}
 		}
         
