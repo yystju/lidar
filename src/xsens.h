@@ -20,10 +20,11 @@ typedef struct {
     
     double latitude;
     double longitude;
+    double altitude;
     
-    double x;
-    double y;
-    double z;
+    double verlocity_x;
+    double verlocity_y;
+    double verlocity_z;
     
     double quaternion_w;
     double quaternion_x;

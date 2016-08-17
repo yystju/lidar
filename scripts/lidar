@@ -8,6 +8,10 @@
 
 LIDAR_HOME=/home/pi/lidar/build/
 
+status() {
+    echo "SERVICE LIDAR is ..."
+}
+
 start() {
     echo "START LIDAR SERVICE"
 	cd $LIDAR_HOME

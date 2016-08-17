@@ -199,6 +199,8 @@ int xsens_wrapper_read(XSENS xsens, XsensData * pData) {
         if (packet.containsAltitude()) {
 			double altitude = packet.altitude();
 			debug("[xsens_wrapper_read] altitude : %f \n", altitude);
+			
+			pData->altitude = altitude;
 		}
 		
 		if (packet.containsLatitudeLongitude()) {
