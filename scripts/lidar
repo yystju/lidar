@@ -1,0 +1,33 @@
+#!/bin/sh
+
+######################
+#  LiDAR Service.
+#  Copy this file to /etc/init.d/ 
+#           and change mode to 755.
+######################
+
+LIDAR_HOME=/home/pi/lidar/build/
+
+start() {
+    echo "START LIDAR SERVICE"
+	cd $LIDAR_HOME
+	./main &
+	echo ""
+}
+
+stop() {
+    echo "So far cannot stopped by command."
+}  
+
+case "$1" in
+    start)
+	    start
+		;;
+	stop)
+	    stop
+		;;
+    *)
+	    echo "Usage: $0 {start|stop}"
+		exit 1
+
+esac

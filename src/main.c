@@ -15,6 +15,7 @@
 #include <unistd.h>
 
 #include <stdio.h>
+#include <signal.h>
 
 static int done = 0;
 static int is_emmit = 0; /*bool variable : 0 -- false, 1 -- true*/
@@ -25,12 +26,6 @@ static char grmc_buff[1024];
 typedef struct {
     FILE * fp;
 } XsensProcessorData;
-
-//typedef struct {
-//    int is_serial;
-//    LIDAR lidar;
-//    SERIAL serial;
-//} LiDARTimeProcessorData;
 
 int xsensDataProcessor(XsensData * pData, void * param) {
     if(near_zero(pData->euler_roll) && near_zero(pData->euler_pitch) && near_zero(pData->euler_yaw)) return !done;
@@ -102,7 +97,6 @@ void * xsenThread (void * p) {
 }
 
 //[lidar 2368]
-
 int lidar2368DataProcessor(char *p, int start, int len, void * param) {
     debug("[lidar2368DataProcessor]>> param : %p\n", param);
     
@@ -198,7 +192,6 @@ void * lidar10110Thread (void * p) {
 }
 
 //[lidar 2368]
-
 void * lidar2368Thread (void * p) {
 	debug("[lidar2368Thread] p : %p\n", p);
 	
@@ -214,7 +207,6 @@ void * lidar2368Thread (void * p) {
 }
 
 //[lidar 8308]
-
 int lidar8308DataProcessor(char *p, int start, int len, void * param) {
     debug("[lidar8308DataProcessor]>> param : %p\n", param);
     
@@ -232,6 +224,7 @@ int lidar8308DataProcessor(char *p, int start, int len, void * param) {
     return !done;
 }
 
+
 void * lidar8308Thread (void * p) {
     debug("[lidar8308Thread] p : %p\n", p);
     
@@ -246,10 +239,34 @@ void * lidar8308Thread (void * p) {
     pthread_exit(NULL);
 }
 
-int start(int argc, char * argv[]) {
+/**
+ * Signal Handler for deamon mode.
+ * When SIGQUIT | SIGINT, the flag "done" will be set.
+ */
+void daemon_exit_handler(int sig) {
+    switch (sig) {
+    case SIGQUIT:
+        debug("[daemon_exit_handler] SIGQUIT ...\n");
+        done = 1;
+        break;
+    case SIGINT:
+        debug("[daemon_exit_handler] SIGINT ...\n");
+        done = 1;
+        break;
+    default:
+        debug("[daemon_exit_handler] unhandled signal {%d}\n", sig);
+        break;
+    }
+}
+
+int start(int is_daemon) {
     debug("[START]>>\n");
     
     //Init...
+    
+    if(is_daemon) {
+        init_deamon_process();
+    }
     
     int cpu_core_count = (int)sysconf(_SC_NPROCESSORS_CONF);
     
@@ -305,13 +322,17 @@ int start(int argc, char * argv[]) {
 	
 	debug("Waiting for any key...\n");
 	
-	fputs("Press any key...", stdout);
-	fgetc(stdin);
-	
-	done = 1;
-	
-	debug("Key has been pressed.\n");
-	debug("Start to dispose...\n");
+	if(!is_daemon) {
+    	fputs("Press any key...", stdout);
+    	fgetc(stdin);
+    	
+    	done = 1;
+    	
+    	debug("Key has been pressed.\n");
+    	debug("Start to dispose...\n");
+	} else {
+	    signal(SIGQUIT, daemon_exit_handler);
+	}
 	
 	pthread_join(lidar_2368_thread_handler, (void *)NULL);
 	pthread_join(lidar_8308_thread_handler, (void *)NULL);
@@ -337,95 +358,6 @@ int start(int argc, char * argv[]) {
     return 0;
 }
 
-int test_repository (int argc, char * argv[]) {
-     Configuration * configurations = read_configuration_file("./main.ini", 5);
-    
-    const char * ins_device = (const char *)get_configuration(configurations, "repository.root");
-    
-    debug("ins_device : %s\n", ins_device);
-    
-    REPOSITORY * repo = repository_init(ins_device);
-    
-    REPO_ITEM * item = repository_new_item(repo);
-    
-    repository_close_item(item);
-    
-    FILE * fp = repository_open_write_file(item, "lidar");
-    
-    debug("fp : %p\n", fp);
-    
-    fprintf(fp, "%s\n", repo->root_pathname);
-    
-    fclose(fp);
-    
-    repository_dispose(repo);
-    
-    dispose_configuration(configurations);
-    
-    return 0;
-}
-
-int test_encoder_decoder(int argc, char * argv[]) {
-    //char buff[1024];
-    
-    //format_gprmc(buff, sizeof(buff), 2016, 6, 5, 10, 59, 00);
-    
-    //puts(buff);
-    
-    //blink(10);
-    
-    gen_tabs();
-    
-    char * src = "Hello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\nHello This is a test.\n";
-    
-    debug("strlen(src) : %d\n", strlen(src));
-    
-    char encoded[1024];
-    
-    char decoded[1024];
-    
-    int len = encode_data(encoded, src, strlen(src));
-    
-    debug("len : %d\n", len);
-    
-    int len2 = decode_data(decoded, encoded, len);
-    
-    debug("len2 : %d\n", len2);
-    
-    decoded[len2] = '\0';
-    
-    debug("--1--\n");
-    
-    debug("decoded : %s\n", decoded);
-    
-    debug("strlen(decoded) : %d\n", strlen(decoded));
-    
-    debug("src and decoded are %s.\n", strcmp(src, decoded) == 0 ? "equal" : "not equal");
-    
-    return 0;
-}
-
-int test_xsens(int argc, char * argv[]) {
-    Configuration * configurations = read_configuration_file("./main.ini", 5);
-    
-    // for(int i = 0; i < configurations->length; ++i) {
-    //     debug("[%s=%s]\n", (configurations->pConfig)[i].key, (configurations->pConfig)[i].value);
-    // }
-    
-    const char * ins_device = (const char *)get_configuration(configurations, "ins.device");
-    
-    debug("ins_device : %s\n", ins_device);
-    
-    readXsensData(ins_device, xsensDataProcessor, (void *) NULL);
-    
-    dispose_configuration(configurations);
-    
-    return 0;
-}
-
-int main(int argc, char * argv[]) {    
-    //return test_encoder_decoder(argc, argv);
-    //return test_xsens(argc, argv);
-    //return test_repository(argc, argv);
-    return start(argc, argv);
+int main(int argc, char * argv[]) {
+    return start(1); /*1 -- deamon, 0 -- console application.*/
 }

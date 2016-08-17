@@ -1,0 +1,36 @@
+#!/bin/sh
+
+status() {
+    echo "SERVICE LIDAR is ..."
+}  
+
+start() {
+    echo "STARTING SERVICE LIDAR..."
+	echo "SERVICE LIDAR STARTED"
+}
+
+stop() {
+    echo "STOPPING SERVICE LIDAR..."
+	echo "SERVICE LIDAR STOPPED"
+}  
+
+case "$1" in
+    status)
+	    status
+		;;
+    start)
+	    start
+		;;
+	stop)
+	    stop
+		;;
+	restart)
+	    stop
+	    sleep 2
+	    start
+		;;
+    *)
+	    echo "Usage: $0 {start|stop|restart}"
+		exit 1
+
+esac

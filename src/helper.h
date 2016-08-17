@@ -51,6 +51,8 @@ int decode_data(char * dest, char * src, int n);
 
 int near_zero(double d);
 
+void init_deamon_process(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -326,6 +326,32 @@ int near_zero(double d) {
     return (d < 1e-2);
 }
 
+void init_deamon_process(void) {
+    pid_t pid;
+    int i;
+    
+    pid = fork();
+    if( pid == -1)
+        error("[init_deamon_process] fork error.\n");
+    if( pid > 0 )
+        exit(0);
+    if(setsid() == -1)
+        error("[init_deamon_process] setsid error.\n");
+
+    //chdir("/");
+    
+    for( i = 0; i < 3; ++i) {
+        close(i);
+        open("/dev/null", O_RDWR);
+        dup(0);
+        dup(0);
+    }
+    
+    umask(0);
+    return;
+}
+
+
 #ifdef __cplusplus
 }
 #endif
