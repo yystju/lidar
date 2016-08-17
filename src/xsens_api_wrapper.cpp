@@ -188,11 +188,11 @@ int xsens_wrapper_read(XSENS xsens, XsensData * pData) {
 			if (v.size() == 3) {
 				const XsReal * p = v.data();
 
-				pData->x = p[0];
-				pData->y = p[1];
-				pData->z = p[2];
+				pData->velocity_x = p[0];
+				pData->velocity_y = p[1];
+				pData->velocity_z = p[2];
 				
-				debug("[xsens_wrapper_read] velocity(x, y, z) : (%f, %f, %f) \n", pData->x, pData->y, pData->z);
+				debug("[xsens_wrapper_read] velocity(x, y, z) : (%f, %f, %f) \n", pData->velocity_x, pData->velocity_y, pData->velocity_z);
 			}
 		}
         

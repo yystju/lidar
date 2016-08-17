@@ -22,9 +22,9 @@ typedef struct {
     double longitude;
     double altitude;
     
-    double verlocity_x;
-    double verlocity_y;
-    double verlocity_z;
+    double velocity_x;
+    double velocity_y;
+    double velocity_z;
     
     double quaternion_w;
     double quaternion_x;

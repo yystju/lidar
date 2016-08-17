@@ -15,6 +15,8 @@
 #include <string.h>
 #include <memory.h>
 
+#include <fcntl.h>
+
 #include <uuid/uuid.h>
 
 #include "aes.h"
